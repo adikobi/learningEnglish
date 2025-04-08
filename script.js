@@ -101,10 +101,7 @@ const words = {
     'grandpa': { translation: 'סבא', emoji: '👴', level: 1 },
     
     // Weather
-    'sunny': { translation: 'שמשי', emoji: '☀️', level: 1 },
-    'rainy': { translation: 'גשום', emoji: '🌧️', level: 1 },
-    'cloudy': { translation: 'מעונן', emoji: '☁️', level: 1 },
-    'windy': { translation: 'רוח', emoji: '💨', level: 1 },
+    'wind': { translation: 'רוח', emoji: '💨', level: 1 },
     'storm': { translation: 'סערה', emoji: '⛈️', level: 1 },
     
     // Additional words
@@ -130,17 +127,11 @@ const words = {
     'hat': { translation: 'כובע', emoji: '🧢', level: 2 },
     'socks': { translation: 'גרביים', emoji: '🧦', level: 2 },
     'coat': { translation: 'מעיל', emoji: '🧥', level: 2 },
-    'belt': { translation: 'חגורה', emoji: '⛓️', level: 2 },
 
     // House
-    'room': { translation: 'חדר', emoji: '🏠', level: 2 },
-    'kitchen': { translation: 'מטבח', emoji: '🍳', level: 2 },
-    'table': { translation: 'שולחן', emoji: '🪑', level: 2 },
     'chair': { translation: 'כיסא', emoji: '🪑', level: 2 },
     'bed': { translation: 'מיטה', emoji: '🛏️', level: 2 },
-    'fridge': { translation: 'מקרר', emoji: '❄️', level: 2 },
-    'oven': { translation: 'תנור', emoji: '🔥', level: 2 },
-    'sink': { translation: 'כיור', emoji: '🚰', level: 2 },
+    'fire': { translation: 'אש', emoji: '🔥', level: 2 },
 
     // Numbers
     'one': { translation: 'אחד', emoji: '1️⃣', level: 2 },
@@ -161,14 +152,13 @@ const words = {
     'scared': { translation: 'מפחד', emoji: '😨', level: 2 },
     'tired': { translation: 'עייף', emoji: '😴', level: 2 },
     'hungry': { translation: 'רעב', emoji: '😋', level: 2 },
-    'thirsty': { translation: 'צמא', emoji: '🥤', level: 2 },
     'surprised': { translation: 'מופתע', emoji: '😲', level: 2 },
 
     // Seasons
-    'summer': { translation: 'קיץ', emoji: '☀️', level: 2 },
-    'winter': { translation: 'חורף', emoji: '❄️', level: 2 },
-    'autumn': { translation: 'סתיו', emoji: '🍂', level: 2 },
-    'spring': { translation: 'אביב', emoji: '🌸', level: 2 },
+    'summer (עונת השנה)': { translation: 'קיץ', emoji: '☀️', level: 2 },
+    'winter (עונת השנה)': { translation: 'חורף', emoji: '❄️', level: 2 },
+    'autumn (עונת השנה)': { translation: 'סתיו', emoji: '🍂', level: 2 },
+    'spring (עונת השנה)': { translation: 'אביב', emoji: '🌸', level: 2 },
 
     // Days of the Week
     'Sunday': { translation: 'ראשון', emoji: '1️⃣', level: 2 },
@@ -181,13 +171,8 @@ const words = {
 
     // Musical Instruments
     'guitar': { translation: 'גיטרה', emoji: '🎸', level: 2 },
-    'drum': { translation: 'תוף', emoji: '🥁', level: 2 },
     'piano': { translation: 'פסנתר', emoji: '🎹', level: 2 },
-    'flute': { translation: 'חליל', emoji: '🎵', level: 2 },
     'violin': { translation: 'כינור', emoji: '🎻', level: 2 },
-    'trumpet': { translation: 'חצוצרה', emoji: '🎺', level: 2 },
-    'xylophone': { translation: 'קסילופון', emoji: '🎼', level: 2 },
-    'tambourine': { translation: 'טמבורין', emoji: '🥁', level: 2 }
 };
 
 // Function to get a random word based on current level

@@ -167,36 +167,20 @@ h1 {
     background-color: #2980b9;
 }
 
+.control-button.active {
+    background-color: #f44336;
+}
+
+.control-button.active:hover {
+    background-color: #d32f2f;
+}
+
 .button-icon {
     font-size: 1.5rem;
 }
 
 .button-text {
     font-size: 1.2rem;
-}
-
-#level2Button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    margin: 10px 0;
-    transition: background-color 0.3s;
-}
-
-#level2Button:hover {
-    background-color: #45a049;
-}
-
-#level2Button.active {
-    background-color: #f44336;
-}
-
-#level2Button.active:hover {
-    background-color: #d32f2f;
 }
 
 .word-with-speaker {
@@ -257,11 +241,6 @@ h1 {
 
     .button-text {
         font-size: 1rem;
-    }
-
-    #level2Button {
-        font-size: 14px;
-        padding: 8px 16px;
     }
 
     .speaker-button {
