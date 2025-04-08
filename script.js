@@ -5,7 +5,7 @@ const translationElement = document.getElementById('translation');
 const correctEmojiElement = document.getElementById('correct-emoji');
 const nextButton = document.getElementById('next-word');
 const soundButton = document.getElementById('sound-toggle');
-const helpButton = document.getElementById('help-button');
+const level2Button = document.getElementById('level2-toggle');
 
 // Game state
 let soundEnabled = true;
@@ -363,13 +363,12 @@ function triggerConfetti() {
 // Function to toggle level 2 words
 function toggleLevel2() {
     level2Enabled = !level2Enabled;
-    const level2Button = document.getElementById('level2Button');
-    level2Button.textContent = level2Enabled ? 'ביטול מילים מתקדמות' : 'הוספת מילים מתקדמות';
-    level2Button.classList.toggle('active', level2Enabled);
+    level2Button.classList.toggle('active');
+    level2Button.querySelector('.button-text').textContent = level2Enabled ? 'מילים מתקדמות' : 'מילים בסיסיות';
     
     // Get a new word when toggling levels
     currentWord = getRandomWord();
-    displayWord();
+    displayWord(currentWord);
 }
 
 // Initialize the game
@@ -385,30 +384,25 @@ function init() {
         displayWord(getRandomWord());
     });
     
-    // Sound toggle
+    // Sound toggle button
     soundButton.addEventListener('click', () => {
         soundEnabled = !soundEnabled;
-        soundButton.style.backgroundColor = soundEnabled ? '#2ecc71' : '#3498db';
-        soundButton.querySelector('.button-text').textContent = soundEnabled ? 'הפעל קול' : 'כבה קול';
+        soundButton.classList.toggle('active');
+        soundButton.querySelector('.button-text').textContent = soundEnabled ? 'כבה שמע' : 'הפעל שמע';
     });
     
-    // Help button
-    helpButton.addEventListener('click', showAnswer);
+    // Level 2 toggle button
+    level2Button.addEventListener('click', toggleLevel2);
     
     // Initialize speech synthesis on page load for Android
-    if (/Android/i.test(navigator.userAgent)) {
-        // Initialize speech synthesis with volume 0
-        const utterance = new SpeechSynthesisUtterance('');
-        utterance.volume = 0;
-        window.speechSynthesis.speak(utterance);
+    if (isAndroid) {
+        speechSynthesis.cancel();
+        setTimeout(() => {
+            const utterance = new SpeechSynthesisUtterance('');
+            utterance.volume = 0;
+            speechSynthesis.speak(utterance);
+        }, 100);
     }
-
-    // Add level 2 button to the DOM
-    const level2Button = document.createElement('button');
-    level2Button.id = 'level2Button';
-    level2Button.textContent = 'הוספת מילים מתקדמות';
-    level2Button.addEventListener('click', toggleLevel2);
-    document.querySelector('.container').insertBefore(level2Button, document.querySelector('.word-container'));
 }
 
 // Start the game when the page loads
