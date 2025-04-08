@@ -145,6 +145,51 @@ h1 {
     font-size: 1.2rem;
 }
 
+#level2Button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 10px 0;
+    transition: background-color 0.3s;
+}
+
+#level2Button:hover {
+    background-color: #45a049;
+}
+
+#level2Button.active {
+    background-color: #f44336;
+}
+
+#level2Button.active:hover {
+    background-color: #d32f2f;
+}
+
+.word-with-speaker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.speaker-button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.speaker-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
 /* Mobile Responsive Design */
 @media (max-width: 600px) {
     .container {
@@ -182,6 +227,15 @@ h1 {
 
     .button-text {
         font-size: 1rem;
+    }
+
+    #level2Button {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+
+    .speaker-button {
+        font-size: 1.2em;
     }
 }
 
