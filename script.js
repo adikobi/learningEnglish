@@ -293,37 +293,14 @@ function showAnswer() {
 function speakWord(word) {
     if (!soundEnabled) return;
     
-    // Check if running on Android
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    
-    // Create a new utterance
     const utterance = new SpeechSynthesisUtterance(word);
-    
-    // Set English language
     utterance.lang = 'en-US';
     
-    // Different handling for Android
-    if (isAndroid) {
-        // Try alternative approach for Android
-        try {
-            // Cancel any ongoing speech
-            window.speechSynthesis.cancel();
-            
-            // Use a short timeout to ensure the speech engine is ready
-            setTimeout(() => {
-                // Set volume and rate for better chances on Android
-                utterance.volume = 1;
-                utterance.rate = 0.8; // Slightly slower for better understanding
-                utterance.pitch = 1;
-                
-                // Speak the word
-                window.speechSynthesis.speak(utterance);
-            }, 100);
-        } catch (e) {
-            console.error("Speech synthesis failed on Android:", e);
-        }
-    } else {
-        // Normal handling for other devices
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    // Use a short timeout to ensure the speech engine is ready
+    setTimeout(() => {
         // Set voice to English if available
         const voices = window.speechSynthesis.getVoices();
         const englishVoice = voices.find(voice => voice.lang === 'en-US');
@@ -331,9 +308,14 @@ function speakWord(word) {
             utterance.voice = englishVoice;
         }
         
+        // Set volume and rate for better understanding
+        utterance.volume = 1;
+        utterance.rate = 0.8;
+        utterance.pitch = 1;
+        
         // Speak the word
         window.speechSynthesis.speak(utterance);
-    }
+    }, 100);
 }
 
 // Function to trigger confetti animation
