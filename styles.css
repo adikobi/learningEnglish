@@ -73,7 +73,7 @@ h1 {
     margin: 5px 0;
     padding: 10px 20px;
     border-radius: 10px;
-    background-color: #f8f9fa;
+    background-color: transparent;
 }
 
 .correct-emoji {
@@ -81,8 +81,8 @@ h1 {
     margin: 5px 0;
     padding: 15px;
     border-radius: 15px;
-    background-color: #f8f9fa;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background-color: transparent;
+    box-shadow: none;
 }
 
 .emoji-options {
