@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>לימוד אנגלית לילדים</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>לימוד אנגלית</h1>
+        </header>
+        
+        <main>
+            <div class="word-container">
+                <div id="word" class="word"></div>
+                <div id="emoji-options" class="emoji-options"></div>
+                <div id="translation" class="translation"></div>
+                <div id="correct-emoji" class="emoji"></div>
+            </div>
+            
+            <div class="controls">
+                <button id="next-word" class="control-button">
+                    <span class="button-icon">➡️</span>
+                    <span class="button-text">המילה הבאה</span>
+                </button>
+                <button id="sound-toggle" class="control-button">
+                    <span class="button-icon">🔊</span>
+                    <span class="button-text">הפעל קול</span>
+                </button>
+                <button id="help-button" class="control-button">
+                    <span class="button-icon">❓</span>
+                    <span class="button-text">עזרה</span>
+                </button>
+            </div>
+        </main>
+    </div>
+    <div id="confetti-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
