@@ -33,8 +33,8 @@ const words = {
     'zebra': { translation: 'זברה', emoji: '🦓', level: 1 },
     'cow': { translation: 'פרה', emoji: '🐄', level: 1 },
     'pig': { translation: 'חזיר', emoji: '🐖', level: 1 },
-    'sheep': { translation: 'כבשה', emoji: '��', level: 1 },
-    
+    'sheep': { translation: 'כבשה', emoji: '🐑', level: 1 },
+
     // Nature
     'tree': { translation: 'עץ', emoji: '🌳', level: 1 },
     'flower': { translation: 'פרח', emoji: '🌸', level: 1 },
@@ -47,7 +47,7 @@ const words = {
     'mountain': { translation: 'הר', emoji: '⛰️', level: 1 },
     'sea': { translation: 'ים', emoji: '🌊', level: 1 },
     'ocean': { translation: 'אוקיינוס', emoji: '🌊', level: 1 },
-    
+
     // Food
     'apple': { translation: 'תפוח', emoji: '🍎', level: 1 },
     'banana': { translation: 'בננה', emoji: '🍌', level: 1 },
@@ -64,7 +64,7 @@ const words = {
     'cheese': { translation: 'גבינה', emoji: '🧀', level: 1 },
     'egg': { translation: 'ביצה', emoji: '🥚', level: 1 },
     'honey': { translation: 'דבש', emoji: '🍯', level: 1 },
-    
+
     // Objects
     'house': { translation: 'בית', emoji: '🏠', level: 1 },
     'car': { translation: 'מכונית', emoji: '🚗', level: 1 },
@@ -79,7 +79,7 @@ const words = {
     'camera': { translation: 'מצלמה', emoji: '📷', level: 1 },
     'bicycle': { translation: 'אופניים', emoji: '🚲', level: 1 },
     'train': { translation: 'רכבת', emoji: '🚂', level: 1 },
-    
+
     // Colors
     'red': { translation: 'אדום', emoji: '🔴', level: 1 },
     'blue': { translation: 'כחול', emoji: '🔵', level: 1 },
@@ -90,7 +90,7 @@ const words = {
     'brown': { translation: 'חום', emoji: '🟤', level: 1 },
     'black': { translation: 'שחור', emoji: '⚫', level: 1 },
     'white': { translation: 'לבן', emoji: '⚪', level: 1 },
-    
+
     // Family
     'mom': { translation: 'אמא', emoji: '👩', level: 1 },
     'dad': { translation: 'אבא', emoji: '👨', level: 1 },
@@ -99,11 +99,11 @@ const words = {
     'baby': { translation: 'תינוק', emoji: '👶', level: 1 },
     'grandma': { translation: 'סבתא', emoji: '👵', level: 1 },
     'grandpa': { translation: 'סבא', emoji: '👴', level: 1 },
-    
+
     // Weather
     'wind': { translation: 'רוח', emoji: '💨', level: 1 },
     'storm': { translation: 'סערה', emoji: '⛈️', level: 1 },
-    
+
     // Additional words
     'heart': { translation: 'לב', emoji: '💗', level: 1 },
     'pencil': { translation: 'עיפרון', emoji: '✏️', level: 1 },
@@ -175,11 +175,15 @@ const words = {
     'violin': { translation: 'כינור', emoji: '🎻', level: 2 },
 };
 
-// Function to get a random word based on current level
+// Function to get a random word based on the selected level
 function getRandomWord() {
-    const availableWords = Object.entries(words).filter(([_, data]) => 
-        data.level === 1 || (data.level === 2 && level2Enabled)
-    );
+    const availableWords = Object.entries(words).filter(([_, data]) => {
+        if (level2Enabled) {
+            return data.level === 2;
+        } else {
+            return data.level === 1;
+        }
+    });
     const randomIndex = Math.floor(Math.random() * availableWords.length);
     return availableWords[randomIndex][0];
 }
@@ -188,7 +192,7 @@ function getRandomWord() {
 function getRandomEmojis(correctEmoji, count = 2) {
     const allEmojis = Object.values(words).map(word => word.emoji);
     const otherEmojis = allEmojis.filter(emoji => emoji !== correctEmoji);
-    
+
     // Shuffle and take the first 'count' emojis
     const shuffled = otherEmojis.sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
@@ -198,21 +202,21 @@ function getRandomEmojis(correctEmoji, count = 2) {
 function displayWord(word) {
     currentWord = word;
     showingAnswer = false;
-    
+
     // Clear previous content
     wordElement.textContent = word;
     translationElement.textContent = '';
     correctEmojiElement.textContent = '';
     emojiOptionsElement.innerHTML = '';
     emojiOptionsElement.style.display = 'flex'; // Make sure the container is visible
-    
+
     // Get the correct emoji and two random ones
     const correctEmoji = words[word].emoji;
     const randomEmojis = getRandomEmojis(correctEmoji);
-    
+
     // Combine and shuffle all emojis
     const allEmojis = [correctEmoji, ...randomEmojis].sort(() => 0.5 - Math.random());
-    
+
     // Create emoji options
     allEmojis.forEach(emoji => {
         const emojiOption = document.createElement('div');
@@ -230,7 +234,7 @@ function displayWord(word) {
         e.stopPropagation(); // Prevent word click event
         speakWord(word);
     });
-    
+
     // Create word container if it doesn't exist
     let wordContainer = document.querySelector('.word-with-speaker');
     if (!wordContainer) {
@@ -239,7 +243,7 @@ function displayWord(word) {
         wordElement.parentNode.replaceChild(wordContainer, wordElement);
         wordContainer.appendChild(wordElement);
     }
-    
+
     // Add or update speaker button
     const existingSpeaker = wordContainer.querySelector('.speaker-button');
     if (existingSpeaker) {
@@ -251,7 +255,7 @@ function displayWord(word) {
 // Function to check if the selected emoji is correct
 function checkAnswer(selectedEmoji, correctEmoji) {
     if (showingAnswer) return;
-    
+
     const emojiOptions = document.querySelectorAll('.emoji-option');
     emojiOptions.forEach(option => {
         if (option.textContent === selectedEmoji) {
@@ -277,13 +281,13 @@ function showAnswer() {
         }
         return;
     }
-    
+
     showingAnswer = true;
     const wordData = words[currentWord];
     translationElement.textContent = wordData.translation;
     correctEmojiElement.textContent = wordData.emoji;
     emojiOptionsElement.style.display = 'none';
-    
+
     if (soundEnabled) {
         speakWord(currentWord);
     }
@@ -292,13 +296,13 @@ function showAnswer() {
 // Function to speak a word
 function speakWord(word) {
     if (!soundEnabled) return;
-    
+
     const utterance = new SpeechSynthesisUtterance(word);
     utterance.lang = 'en-US';
-    
+
     // Cancel any ongoing speech
     window.speechSynthesis.cancel();
-    
+
     // Use a short timeout to ensure the speech engine is ready
     setTimeout(() => {
         // Set voice to English if available
@@ -307,12 +311,12 @@ function speakWord(word) {
         if (englishVoice) {
             utterance.voice = englishVoice;
         }
-        
+
         // Set volume and rate for better understanding
         utterance.volume = 1;
         utterance.rate = 0.8;
         utterance.pitch = 1;
-        
+
         // Speak the word
         window.speechSynthesis.speak(utterance);
     }, 100);
@@ -331,8 +335,7 @@ function triggerConfetti() {
 function toggleLevel2() {
     level2Enabled = !level2Enabled;
     level2Button.classList.toggle('active');
-    level2Button.querySelector('.button-text').textContent = level2Enabled ? 'מילים מתקדמות' : 'מילים בסיסיות';
-    
+
     // Get a new word when toggling levels
     currentWord = getRandomWord();
     displayWord(currentWord);
@@ -342,26 +345,33 @@ function toggleLevel2() {
 function init() {
     // Display first word
     displayWord(getRandomWord());
-    
+
     // Add click event for the word to show answer
     wordElement.addEventListener('click', showAnswer);
-    
+
     // Next word button
     nextButton.addEventListener('click', () => {
         displayWord(getRandomWord());
     });
-    
+
     // Sound toggle button
     soundButton.addEventListener('click', () => {
         soundEnabled = !soundEnabled;
-        soundButton.classList.toggle('active');
+        soundButton.classList.toggle('active', soundEnabled);
+        soundButton.querySelector('.button-icon').textContent = soundEnabled ? '🔊' : '🔇';
         soundButton.querySelector('.button-text').textContent = soundEnabled ? 'כבה שמע' : 'הפעל שמע';
     });
-    
+
     // Level 2 toggle button
     level2Button.addEventListener('click', toggleLevel2);
-    
+
+    // Set initial button states
+    soundButton.classList.toggle('active', soundEnabled);
+    soundButton.querySelector('.button-icon').textContent = soundEnabled ? '🔊' : '🔇';
+    soundButton.querySelector('.button-text').textContent = soundEnabled ? 'כבה שמע' : 'הפעל שמע';
+
     // Initialize speech synthesis on page load for Android
+    const isAndroid = /Android/i.test(navigator.userAgent);
     if (isAndroid) {
         speechSynthesis.cancel();
         setTimeout(() => {
@@ -373,4 +383,4 @@ function init() {
 }
 
 // Start the game when the page loads
-window.addEventListener('load', init); 
+window.addEventListener('load', init);
