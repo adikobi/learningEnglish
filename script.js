@@ -175,15 +175,11 @@ const words = {
     'violin': { translation: 'כינור', emoji: '🎻', level: 2 },
 };
 
-// Function to get a random word based on the selected level
+// Function to get a random word based on current level
 function getRandomWord() {
-    const availableWords = Object.entries(words).filter(([_, data]) => {
-        if (level2Enabled) {
-            return data.level === 2;
-        } else {
-            return data.level === 1;
-        }
-    });
+    const availableWords = Object.entries(words).filter(([_, data]) =>
+        data.level === 1 || (data.level === 2 && level2Enabled)
+    );
     const randomIndex = Math.floor(Math.random() * availableWords.length);
     return availableWords[randomIndex][0];
 }
