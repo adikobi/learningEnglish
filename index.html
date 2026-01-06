@@ -928,10 +928,10 @@
             // Original 20
             { full: "The Dog is barking", missing: "Dog", display: "The ___ is barking", translation: "הכלב נובח", options: ["Cat", "Fish", "Bird"] },
             { full: "I eat a green Apple", missing: "Apple", display: "I eat a green ___", translation: "אני אוכל תפוח ירוק", options: ["Banana", "Pizza", "Egg"] },
-            { full: "The Sky is blue", missing: "Blue", display: "The Sky is ___", translation: "השמיים כחולים", options: ["Red", "Green", "Yellow"] }, // Assuming Blue is in wordsDB
+            { full: "The Sky is blue", missing: "Blue", display: "The Sky is ___", translation: "השמיים כחולים", options: ["Red", "Green", "Yellow"] },
             { full: "I have a red Car", missing: "Car", display: "I have a red ___", translation: "יש לי מכונית אדומה", options: ["Bus", "Bike", "Train"] },
             { full: "The Sun is hot", missing: "Sun", display: "The ___ is hot", translation: "השמש חמה", options: ["Moon", "Star", "Cloud"] },
-            { full: "I wash my Hands", missing: "Hand", display: "I wash my ___s", translation: "אני שוטף את הידיים", options: ["Foot", "Nose", "Eye"] }, // Using singular Hand in DB
+            { full: "I wash my Hands", missing: "Hand", display: "I wash my ___s", translation: "אני שוטף את הידיים", options: ["Foot", "Nose", "Eye"] },
             { full: "The Fish swims", missing: "Fish", display: "The ___ swims", translation: "הדג שוחה", options: ["Bird", "Cat", "Lion"] },
             { full: "I sleep in a Bed", missing: "Bed", display: "I sleep in a ___", translation: "אני ישן במיטה", options: ["Chair", "Table", "Box"] },
             { full: "The Cat says Meow", missing: "Cat", display: "The ___ says Meow", translation: "החתול אומר מיאו", options: ["Dog", "Cow", "Pig"] },
@@ -1005,8 +1005,6 @@
             { full: "I love Chocolate", missing: "Chocolate", display: "I love ___", translation: "אני אוהב שוקולד", options: ["Candy", "Cake", "Ice Cream"] },
             { full: "The Strawberry is red", missing: "Strawberry", display: "The ___ is red", translation: "התות אדום", options: ["Apple", "Cherry", "Tomato"] },
             { full: "I cook Rice", missing: "Rice", display: "I cook ___", translation: "אני מבשל אורז", options: ["Pasta", "Meat", "Soup"] },
-            { full: "I watch Television", missing: "Television", display: "I watch ___", translation: "אני צופה בטלוויזיה", options: ["Radio", "Computer", "Phone"] },
-            { full: "I take photo with Camera", missing: "Camera", display: "I take photo with ___", translation: "אני מצלם עם מצלמה", options: ["Phone", "Eyes", "Box"] },
             { full: "I play the Guitar", missing: "Guitar", display: "I play the ___", translation: "אני מנגן בגיטרה", options: ["Piano", "Drum", "Violin"] },
             { full: "The Candle gives light", missing: "Candle", display: "The ___ gives light", translation: "הנר נותן אור", options: ["Lamp", "Sun", "Fire"] },
             { full: "I lock door with Key", missing: "Key", display: "I lock door with ___", translation: "אני נועל דלת עם מפתח", options: ["Lock", "Hand", "Pen"] },
@@ -1147,11 +1145,17 @@
                 
                 let options = [correctWordData];
                 
-                // Add distractors
-                currentWordObj.options.forEach(optStr => {
-                    const optData = wordsDB.find(w => w.word === optStr) || { word: optStr, emoji: '' };
-                    options.push(optData);
-                });
+                // Add random distractors from ALL words
+                let pool = wordsDB;
+                let safety = 0;
+                while (options.length < 4 && safety < 50) {
+                    safety++;
+                    const random = pool[Math.floor(Math.random() * pool.length)];
+                    // Ensure the distractor is not the correct word and not already in options
+                    if (random.word !== correctWordStr && !options.find(o => o.word === random.word)) {
+                        options.push(random);
+                    }
+                }
                 
                 return options.sort(() => Math.random() - 0.5);
             } else {
