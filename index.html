@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>כיף עם אנגלית - למעין</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF6B6B;
+            --secondary-color: #4ECDC4;
+            --accent-color: #FFE66D;
+            --text-color: #2D3436;
+            --card-bg: #FFFFFF;
+            --success-color: #2ECC71;
+            --error-color: #FF5252;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Rubik', Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 15px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary-color), var(--success-color));
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        /* Controls inside header for settings */
+        .settings-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .score-icon { font-size: 1.4rem; }
+        
+        /* Game Area */
+        .game-area {
+            text-align: center;
+            padding: 5px;
+        }
+
+        .word-display {
+            background: white;
+            padding: 25px;
+            border-radius: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 200px;
+            justify-content: center;
+        }
+
+        .word-display:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary-color);
+        }
+
+        .english-word-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .english-word {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            cursor: pointer;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.05);
+            line-height: 1.2;
+            transition: font-size 0.3s ease, opacity 0.3s ease;
+            direction: ltr;
+            unicode-bidi: isolate;
+        }
+        
+        /* Hidden word for Listening Mode */
+        .english-word.hidden-word {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute; /* Hide from flow but keep DOM presence */
+        }
+
+        /* Big Speaker Icon for Listening Mode */
+        .big-speaker-icon {
+            font-size: 5rem;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+            display: none;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .english-word.sentence-mode {
+            font-size: 2.2rem;
+        }
+
+        .word-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .action-btn {
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .action-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .speaker-btn {
+            background: var(--accent-color);
+        }
+
+        .hint-btn {
+            background: #dfe6e9;
+            color: #636e72;
+        }
+
+        .hint-btn:hover {
+            background: #b2bec3;
+            transform: scale(1.05);
+        }
+
+        /* Translation area */
+        .translation-area {
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .translation-hint {
+            font-size: 2rem;
+            color: var(--text-color);
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translateY(10px);
+            font-weight: bold;
+        }
+
+        .translation-hint.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .option-card {
+            background: white;
+            border: 3px solid #f0f0f0;
+            border-radius: 20px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            aspect-ratio: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-emoji {
+            font-size: 3.5rem;
+            z-index: 2;
+        }
+
+        .option-card:hover {
+            transform: scale(1.05);
+            border-color: var(--secondary-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .option-card.correct {
+            background: #d4edda;
+            border-color: var(--success-color);
+            animation: bounce 0.6s;
+        }
+
+        .option-card.wrong {
+            background: #f8d7da;
+            border-color: var(--error-color);
+            animation: shake 0.5s;
+        }
+
+        /* Controls */
+        .controls-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+        }
+
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background: var(--secondary-color);
+            color: white;
+            width: 100%;
+            justify-content: center;
+            font-size: 1.3rem;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-color);
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary.active {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        /* Select styling */
+        .custom-select {
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            font-size: 0.95rem;
+            background: white;
+            cursor: pointer;
+            outline: none;
+            font-family: 'Rubik', sans-serif;
+            min-width: 120px;
+        }
+
+        .custom-select.mode-select {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* Toggle Button Specifics */
+        .toggle-btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Feedback Message */
+        .feedback-msg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 50px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--success-color);
+            z-index: 100;
+            pointer-events: none;
+            text-align: center;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .feedback-msg.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        /* Animations */
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            10%, 30%, 50%, 70%, 90% {transform: translateX(-5px);}
+            20%, 40%, 60%, 80% {transform: translateX(5px);}
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .english-word { font-size: 2.5rem; }
+            .english-word.sentence-mode { font-size: 1.8rem; }
+            .option-emoji { font-size: 3rem; }
+            .container { padding: 15px; border-radius: 20px; }
+            .stats-bar { flex-direction: column; align-items: stretch; }
+            .stat-group, .settings-group { justify-content: space-between; width: 100%; }
+            .options-grid { grid-template-columns: repeat(2, 1fr); }
+            .btn-primary { position: sticky; bottom: 10px; z-index: 10; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="feedback-msg" id="feedback-msg">מעולה! 🎉</div>
+
+    <div class="container">
+        
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <!-- Header & Stats -->
+        <header>
+            <div class="stats-bar">
+                <div class="stat-group">
+                    <div class="stat-item" style="color: #FFD700;">
+                        <span class="score-icon">💎</span>
+                        <span id="score">0</span>
+                    </div>
+                    <div class="stat-item" style="color: #FF6B6B;">
+                        <span class="score-icon">🔥</span>
+                        <span id="streak">0</span>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <!-- Game Mode Selector -->
+                    <select id="game-mode-select" class="custom-select mode-select">
+                        <option value="words" selected>אוצר מילים</option>
+                        <option value="listening">👂 שמיעה (חדש!)</option>
+                        <option value="sentences">השלמת משפטים (מתקדם)</option>
+                    </select>
+
+                    <!-- Vocab Level Selector (Default: Basic) -->
+                    <select id="level-select" class="custom-select">
+                        <option value="all">רמה: הכל</option>
+                        <option value="basic" selected>מתחילים</option>
+                        <option value="advanced">מתקדמים</option>
+                    </select>
+                    <!-- Category Selector -->
+                    <select id="category-select" class="custom-select">
+                        <option value="all">נושא: הכל</option>
+                        <option value="animals">🐰 חיות</option>
+                        <option value="food">🍕 אוכל</option>
+                        <option value="home">🏠 בית</option>
+                        <option value="nature">🌳 טבע</option>
+                        <option value="transport">🚗 תחבורה</option>
+                        <option value="body">👀 גוף</option>
+                        <option value="colors">🎨 צבעים</option>
+                        <option value="clothing">👕 בגדים</option>
+                        <option value="emotions">😊 רגשות</option>
+                        <option value="school">🏫 ביה"ס</option>
+                        <option value="jobs">👮 מקצועות</option>
+                        <option value="sports">⚽ ספורט</option>
+                        <option value="places">🏙️ מקומות</option>
+                        <option value="actions">🏃 פעלים</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Game Area -->
+        <main class="game-area">
+            <div class="word-display" id="word-card">
+                <!-- English Word & Actions Row -->
+                <div class="english-word-container">
+                    <div class="english-word" id="current-word">Hello</div>
+                    <!-- Big Speaker for Listening Mode -->
+                    <div class="big-speaker-icon" id="big-speaker" onclick="speakCurrentWord(true)">🔊</div>
+                    
+                    <div class="word-actions" id="action-buttons">
+                        <button class="action-btn speaker-btn" onclick="speakCurrentWord(true)" title="השמע">🔊</button>
+                        <button class="action-btn hint-btn" id="hint-btn" onclick="showHint()" title="קבל רמז (תרגום)">💡</button>
+                    </div>
+                </div>
+                
+                <!-- Translation Area -->
+                <div class="translation-area">
+                    <div class="translation-hint" id="translation">שלום</div>
+                </div>
+            </div>
+
+            <div class="options-grid" id="options-grid">
+                <!-- Option cards will be injected here -->
+            </div>
+
+            <div class="controls-area">
+                <button id="next-btn" class="btn btn-primary">
+                    <span>הבא</span> ➡️
+                </button>
+                
+                <div class="toggle-btn-group">
+                    <button id="auto-speech-toggle" class="btn btn-secondary active" title="הקראה אוטומטית">
+                        <span>🗣️ אוטומטי</span>
+                    </button>
+                    <button id="sfx-toggle" class="btn btn-secondary active" title="צלילים">
+                        <span>🔔 צלילים</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- Game Config ---
+        let gameMode = 'words'; // 'words', 'sentences', 'listening'
+
+        // --- Data ---
+        const wordsDB = [
+            // --- Animals (35 words) ---
+            { word: 'Dog', translation: 'כלב', emoji: '🐕', category: 'animals', level: 1 },
+            { word: 'Cat', translation: 'חתול', emoji: '🐈', category: 'animals', level: 1 },
+            { word: 'Fish', translation: 'דג', emoji: '🐠', category: 'animals', level: 1 },
+            { word: 'Bird', translation: 'ציפור', emoji: '🐦', category: 'animals', level: 1 },
+            { word: 'Lion', translation: 'אריה', emoji: '🦁', category: 'animals', level: 1 },
+            { word: 'Mouse', translation: 'עכבר', emoji: '🐁', category: 'animals', level: 1 },
+            { word: 'Horse', translation: 'סוס', emoji: '🐎', category: 'animals', level: 1 },
+            { word: 'Cow', translation: 'פרה', emoji: '🐄', category: 'animals', level: 1 },
+            { word: 'Pig', translation: 'חזיר', emoji: '🐖', category: 'animals', level: 1 },
+            { word: 'Chicken', translation: 'תרנגולת', emoji: '🐔', category: 'animals', level: 1 },
+            { word: 'Duck', translation: 'ברווז', emoji: '🦆', category: 'animals', level: 1 },
+            { word: 'Rabbit', translation: 'ארנב', emoji: '🐰', category: 'animals', level: 1 },
+            { word: 'Turtle', translation: 'צב', emoji: '🐢', category: 'animals', level: 1 },
+            { word: 'Snake', translation: 'נחש', emoji: '🐍', category: 'animals', level: 1 },
+            { word: 'Monkey', translation: 'קוף', emoji: '🐒', category: 'animals', level: 1 },
+            // Level 2 Animals
+            { word: 'Elephant', translation: 'פיל', emoji: '🐘', category: 'animals', level: 2 },
+            { word: 'Giraffe', translation: 'ג\'ירף', emoji: '🦒', category: 'animals', level: 2 },
+            { word: 'Zebra', translation: 'זברה', emoji: '🦓', category: 'animals', level: 2 },
+            { word: 'Tiger', translation: 'נמר', emoji: '🐅', category: 'animals', level: 2 },
+            { word: 'Bear', translation: 'דוב', emoji: '🐻', category: 'animals', level: 2 },
+            { word: 'Wolf', translation: 'זאב', emoji: '🐺', category: 'animals', level: 2 },
+            { word: 'Fox', translation: 'שועל', emoji: '🦊', category: 'animals', level: 2 },
+            { word: 'Butterfly', translation: 'פרפר', emoji: '🦋', category: 'animals', level: 2 },
+            { word: 'Bee', translation: 'דבורה', emoji: '🐝', category: 'animals', level: 2 },
+            { word: 'Frog', translation: 'צפרדע', emoji: '🐸', category: 'animals', level: 2 },
+            { word: 'Spider', translation: 'עכביש', emoji: '🕷️', category: 'animals', level: 2 },
+            { word: 'Whale', translation: 'לוויתן', emoji: '🐋', category: 'animals', level: 2 },
+            { word: 'Dolphin', translation: 'דולפין', emoji: '🐬', category: 'animals', level: 2 },
+            { word: 'Shark', translation: 'כריש', emoji: '🦈', category: 'animals', level: 2 },
+            { word: 'Octopus', translation: 'תמנון', emoji: '🐙', category: 'animals', level: 2 },
+            { word: 'Crab', translation: 'סרטן', emoji: '🦀', category: 'animals', level: 2 },
+            { word: 'Owl', translation: 'ינשוף', emoji: '🦉', category: 'animals', level: 2 },
+            { word: 'Bat', translation: 'עטלף', emoji: '🦇', category: 'animals', level: 2 },
+            { word: 'Penguin', translation: 'פינגווין', emoji: '🐧', category: 'animals', level: 2 },
+            { word: 'Dinosaur', translation: 'דינוזאור', emoji: '🦖', category: 'animals', level: 2 },
+            { word: 'Snail', translation: 'חילזון', emoji: '🐌', category: 'animals', level: 2 },
+            { word: 'Camel', translation: 'גמל', emoji: '🐪', category: 'animals', level: 2 },
+            { word: 'Sheep', translation: 'כבשה', emoji: '🐑', category: 'animals', level: 2 },
+            { word: 'Goat', translation: 'עז', emoji: '🐐', category: 'animals', level: 2 },
+
+            // --- Food (35 words) ---
+            { word: 'Apple', translation: 'תפוח', emoji: '🍎', category: 'food', level: 1 },
+            { word: 'Banana', translation: 'בננה', emoji: '🍌', category: 'food', level: 1 },
+            { word: 'Lemon', translation: 'לימון', emoji: '🍋', category: 'food', level: 1 },
+            { word: 'Orange', translation: 'תפוז', emoji: '🍊', category: 'food', level: 1 },
+            { word: 'Pizza', translation: 'פיצה', emoji: '🍕', category: 'food', level: 1 },
+            { word: 'Egg', translation: 'ביצה', emoji: '🥚', category: 'food', level: 1 },
+            { word: 'Milk', translation: 'חלב', emoji: '🥛', category: 'food', level: 1 },
+            { word: 'Cake', translation: 'עוגה', emoji: '🍰', category: 'food', level: 1 },
+            { word: 'Bread', translation: 'לחם', emoji: '🍞', category: 'food', level: 1 },
+            { word: 'Water', translation: 'מים', emoji: '💧', category: 'food', level: 1 },
+            { word: 'Cheese', translation: 'גבינה', emoji: '🧀', category: 'food', level: 1 },
+            { word: 'Ice Cream', translation: 'גלידה', emoji: '🍦', category: 'food', level: 1 },
+            { word: 'Cookie', translation: 'עוגייה', emoji: '🍪', category: 'food', level: 1 },
+            { word: 'Tomato', translation: 'עגבניה', emoji: '🍅', category: 'food', level: 1 },
+            { word: 'Carrot', translation: 'גזר', emoji: '🥕', category: 'food', level: 1 },
+            // Level 2 Food
+            { word: 'Watermelon', translation: 'אבטיח', emoji: '🍉', category: 'food', level: 2 },
+            { word: 'Strawberry', translation: 'תות', emoji: '🍓', category: 'food', level: 2 },
+            { word: 'Grapes', translation: 'ענבים', emoji: '🍇', category: 'food', level: 2 },
+            { word: 'Cherry', translation: 'דובדבן', emoji: '🍒', category: 'food', level: 2 },
+            { word: 'Pear', translation: 'אגס', emoji: '🍐', category: 'food', level: 2 },
+            { word: 'Pineapple', translation: 'אננס', emoji: '🍍', category: 'food', level: 2 },
+            { word: 'Corn', translation: 'תירס', emoji: '🌽', category: 'food', level: 2 },
+            { word: 'Potato', translation: 'תפוח אדמה', emoji: '🥔', category: 'food', level: 2 },
+            { word: 'Cucumber', translation: 'מלפפון', emoji: '🥒', category: 'food', level: 2 },
+            { word: 'Onion', translation: 'בצל', emoji: '🧅', category: 'food', level: 2 },
+            { word: 'Garlic', translation: 'שום', emoji: '🧄', category: 'food', level: 2 },
+            { word: 'Hamburger', translation: 'הובורגר', emoji: '🍔', category: 'food', level: 2 },
+            { word: 'Fries', translation: 'צ\'יפס', emoji: '🍟', category: 'food', level: 2 },
+            { word: 'Hot Dog', translation: 'נקניקייה', emoji: '🌭', category: 'food', level: 2 },
+            { word: 'Popcorn', translation: 'פופקורן', emoji: '🍿', category: 'food', level: 2 },
+            { word: 'Sushi', translation: 'סושי', emoji: '🍣', category: 'food', level: 2 },
+            { word: 'Chocolate', translation: 'שוקולד', emoji: '🍫', category: 'food', level: 2 },
+            { word: 'Candy', translation: 'סוכרייה', emoji: '🍬', category: 'food', level: 2 },
+            { word: 'Honey', translation: 'דבש', emoji: '🍯', category: 'food', level: 2 },
+            { word: 'Meat', translation: 'בשר', emoji: '🥩', category: 'food', level: 2 },
+            { word: 'Rice', translation: 'אורז', emoji: '🍚', category: 'food', level: 2 },
+
+            // --- Home & Objects (30 words) ---
+            { word: 'House', translation: 'בית', emoji: '🏠', category: 'home', level: 1 },
+            { word: 'Door', translation: 'דלת', emoji: '🚪', category: 'home', level: 1 },
+            { word: 'Bed', translation: 'מיטה', emoji: '🛏️', category: 'home', level: 1 },
+            { word: 'Chair', translation: 'כיסא', emoji: '🪑', category: 'home', level: 1 },
+            { word: 'Table', translation: 'שולחן', emoji: '🪑', category: 'home', level: 1 }, 
+            { word: 'Ball', translation: 'כדור', emoji: '⚽', category: 'home', level: 1 },
+            { word: 'Book', translation: 'ספר', emoji: '📚', category: 'home', level: 1 },
+            { word: 'Key', translation: 'מפתח', emoji: '🔑', category: 'home', level: 1 },
+            { word: 'Box', translation: 'קופסא', emoji: '📦', category: 'home', level: 1 },
+            { word: 'Phone', translation: 'טלפון', emoji: '📱', category: 'home', level: 1 },
+            { word: 'Clock', translation: 'שעון', emoji: '⏰', category: 'home', level: 1 },
+            // Level 2 Home
+            { word: 'Window', translation: 'חלון', emoji: '🪟', category: 'home', level: 2 },
+            { word: 'Toilet', translation: 'שירותים', emoji: '🚽', category: 'home', level: 2 },
+            { word: 'Shower', translation: 'מקלחת', emoji: '🚿', category: 'home', level: 2 },
+            { word: 'Soap', translation: 'סבון', emoji: '🧼', category: 'home', level: 2 },
+            { word: 'Toothbrush', translation: 'מברשת שיניים', emoji: '🪥', category: 'home', level: 2 },
+            { word: 'Computer', translation: 'מחשב', emoji: '💻', category: 'home', level: 2 },
+            { word: 'Television', translation: 'טלויזיה', emoji: '📺', category: 'home', level: 2 },
+            { word: 'Camera', translation: 'מצלמה', emoji: '📷', category: 'home', level: 2 },
+            { word: 'Lamp', translation: 'מנורה', emoji: '🛋️', category: 'home', level: 2 }, 
+            { word: 'Light Bulb', translation: 'נורה', emoji: '💡', category: 'home', level: 2 },
+            { word: 'Battery', translation: 'סוללה', emoji: '🔋', category: 'home', level: 2 },
+            { word: 'Candle', translation: 'נר', emoji: '🕯️', category: 'home', level: 2 },
+            { word: 'Gift', translation: 'מתנה', emoji: '🎁', category: 'home', level: 2 },
+            { word: 'Balloon', translation: 'בלון', emoji: '🎈', category: 'home', level: 2 },
+            { word: 'Guitar', translation: 'גיטרה', emoji: '🎸', category: 'home', level: 2 },
+            { word: 'Piano', translation: 'פסנתר', emoji: '🎹', category: 'home', level: 2 },
+            { word: 'Drum', translation: 'תוף', emoji: '🥁', category: 'home', level: 2 },
+            { word: 'Umbrella', translation: 'מטרייה', emoji: '☂️', category: 'home', level: 2 },
+            { word: 'Scissors', translation: 'מספריים', emoji: '✂️', category: 'home', level: 2 },
+
+            // --- Nature (25 words) ---
+            { word: 'Sun', translation: 'שמש', emoji: '☀️', category: 'nature', level: 1 },
+            { word: 'Moon', translation: 'ירח', emoji: '🌙', category: 'nature', level: 1 },
+            { word: 'Star', translation: 'כוכב', emoji: '⭐', category: 'nature', level: 1 },
+            { word: 'Tree', translation: 'עץ', emoji: '🌳', category: 'nature', level: 1 },
+            { word: 'Flower', translation: 'פרח', emoji: '🌸', category: 'nature', level: 1 },
+            { word: 'Fire', translation: 'אש', emoji: '🔥', category: 'nature', level: 1 },
+            { word: 'Water', translation: 'מים', emoji: '💧', category: 'nature', level: 1 },
+            { word: 'Snow', translation: 'שלג', emoji: '❄️', category: 'nature', level: 1 },
+            // Level 2 Nature
+            { word: 'Rain', translation: 'גשם', emoji: '🌧️', category: 'nature', level: 2 },
+            { word: 'Cloud', translation: 'ענן', emoji: '☁️', category: 'nature', level: 2 },
+            { word: 'Rainbow', translation: 'קשת בענן', emoji: '🌈', category: 'nature', level: 2 },
+            { word: 'Mountain', translation: 'הר', emoji: '⛰️', category: 'nature', level: 2 },
+            { word: 'Ocean', translation: 'אוקיינוס', emoji: '🌊', category: 'nature', level: 2 },
+            { word: 'Beach', translation: 'חוף', emoji: '🏖️', category: 'nature', level: 2 },
+            { word: 'Island', translation: 'אי', emoji: '🏝️', category: 'nature', level: 2 },
+            { word: 'Desert', translation: 'מדבר', emoji: '🏜️', category: 'nature', level: 2 },
+            { word: 'Volcano', translation: 'הר געש', emoji: '🌋', category: 'nature', level: 2 },
+            { word: 'Rock', translation: 'אבן', emoji: '🪨', category: 'nature', level: 2 },
+            { word: 'Leaf', translation: 'עלה', emoji: '🍃', category: 'nature', level: 2 },
+            { word: 'Cactus', translation: 'קקטוס', emoji: '🌵', category: 'nature', level: 2 },
+            { word: 'Earth', translation: 'כדור הארץ', emoji: '🌍', category: 'nature', level: 2 },
+            { word: 'Planet', translation: 'כוכב לכת', emoji: '🪐', category: 'nature', level: 2 },
+            { word: 'Comet', translation: 'שביט', emoji: '☄️', category: 'nature', level: 2 },
+            { word: 'Lightning', translation: 'ברק', emoji: '⚡', category: 'nature', level: 2 },
+            { word: 'Tornado', translation: 'טורנדו', emoji: '🌪️', category: 'nature', level: 2 },
+
+            // --- Transport (18 words) ---
+            { word: 'Car', translation: 'מכונית', emoji: '🚗', category: 'transport', level: 1 },
+            { word: 'Bus', translation: 'אוטובוס', emoji: '🚌', category: 'transport', level: 1 },
+            { word: 'Taxi', translation: 'מונית', emoji: '🚕', category: 'transport', level: 1 },
+            { word: 'Bike', translation: 'אופניים', emoji: '🚲', category: 'transport', level: 1 },
+            { word: 'Train', translation: 'רכבת', emoji: '🚆', category: 'transport', level: 1 },
+            // Level 2 Transport
+            { word: 'Truck', translation: 'משאית', emoji: '🚛', category: 'transport', level: 2 },
+            { word: 'Police Car', translation: 'ניידת משטרה', emoji: '🚓', category: 'transport', level: 2 },
+            { word: 'Ambulance', translation: 'אמבולנס', emoji: '🚑', category: 'transport', level: 2 },
+            { word: 'Fire Truck', translation: 'כבנית', emoji: '🚒', category: 'transport', level: 2 },
+            { word: 'Tractor', translation: 'טרקטור', emoji: '🚜', category: 'transport', level: 2 },
+            { word: 'Motorcycle', translation: 'אופנוע', emoji: '🏍️', category: 'transport', level: 2 },
+            { word: 'Scooter', translation: 'קורקינט', emoji: '🛴', category: 'transport', level: 2 },
+            { word: 'Airplane', translation: 'מטוס', emoji: '✈️', category: 'transport', level: 2 },
+            { word: 'Helicopter', translation: 'מסוק', emoji: '🚁', category: 'transport', level: 2 },
+            { word: 'Rocket', translation: 'טיל/חללית', emoji: '🚀', category: 'transport', level: 2 },
+            { word: 'Boat', translation: 'סירה', emoji: '⛵', category: 'transport', level: 2 },
+            { word: 'Ship', translation: 'אונייה', emoji: '🚢', category: 'transport', level: 2 },
+            { word: 'Anchor', translation: 'עוגן', emoji: '⚓', category: 'transport', level: 2 },
+
+            // --- Body (20 words) ---
+            { word: 'Eye', translation: 'עין', emoji: '👁️', category: 'body', level: 1 },
+            { word: 'Ear', translation: 'אוזן', emoji: '👂', category: 'body', level: 1 },
+            { word: 'Nose', translation: 'אף', emoji: '👃', category: 'body', level: 1 },
+            { word: 'Mouth', translation: 'פה', emoji: '👄', category: 'body', level: 1 },
+            { word: 'Hand', translation: 'יד', emoji: '✋', category: 'body', level: 1 },
+            { word: 'Foot', translation: 'רגל', emoji: '🦶', category: 'body', level: 1 },
+            { word: 'Leg', translation: 'רגל (שלמה)', emoji: '🦵', category: 'body', level: 1 },
+            // Level 2 Body
+            { word: 'Finger', translation: 'אצבע', emoji: '☝️', category: 'body', level: 2 },
+            { word: 'Arm', translation: 'זרוע', emoji: '💪', category: 'body', level: 2 },
+            { word: 'Muscle', translation: 'שריר', emoji: '💪', category: 'body', level: 2 },
+            { word: 'Tooth', translation: 'שן', emoji: '🦷', category: 'body', level: 2 },
+            { word: 'Tongue', translation: 'לשון', emoji: '👅', category: 'body', level: 2 },
+            { word: 'Lips', translation: 'שפתיים', emoji: '💋', category: 'body', level: 2 },
+            { word: 'Brain', translation: 'מוח', emoji: '🧠', category: 'body', level: 2 },
+            { word: 'Heart', translation: 'לב', emoji: '❤️', category: 'body', level: 2 },
+            { word: 'Bone', translation: 'עצם', emoji: '🦴', category: 'body', level: 2 },
+            { word: 'Skull', translation: 'גולגולת', emoji: '💀', category: 'body', level: 2 },
+            { word: 'Hair', translation: 'שיער', emoji: '💇', category: 'body', level: 2 },
+            { word: 'Nail', translation: 'ציפורן', emoji: '💅', category: 'body', level: 2 },
+            { word: 'Baby', translation: 'תינוק', emoji: '👶', category: 'body', level: 2 },
+
+            // --- Colors (12 words) ---
+            { word: 'Red', translation: 'אדום', emoji: '🔴', category: 'colors', level: 1 },
+            { word: 'Blue', translation: 'כחול', emoji: '🔵', category: 'colors', level: 1 },
+            { word: 'Green', translation: 'ירוק', emoji: '🟢', category: 'colors', level: 1 },
+            { word: 'Yellow', translation: 'צהוב', emoji: '🟡', category: 'colors', level: 1 },
+            { word: 'Black', translation: 'שחור', emoji: '⚫', category: 'colors', level: 1 },
+            { word: 'White', translation: 'לבן', emoji: '⚪', category: 'colors', level: 1 },
+            // Level 2 Colors
+            { word: 'Purple', translation: 'סגול', emoji: '🟣', category: 'colors', level: 2 },
+            { word: 'Orange', translation: 'כתום', emoji: '🟠', category: 'colors', level: 2 },
+            { word: 'Brown', translation: 'חום', emoji: '🟤', category: 'colors', level: 2 },
+            { word: 'Pink', translation: 'וורוד', emoji: '🩷', category: 'colors', level: 2 },
+            { word: 'Gold', translation: 'זהב', emoji: '🥇', category: 'colors', level: 2 },
+            { word: 'Silver', translation: 'כסף', emoji: '🥈', category: 'colors', level: 2 },
+
+            // --- Clothing (20 words) ---
+            { word: 'Shirt', translation: 'חולצה', emoji: '👕', category: 'clothing', level: 1 },
+            { word: 'Pants', translation: 'מכנסיים', emoji: '👖', category: 'clothing', level: 1 },
+            { word: 'Shoe', translation: 'נעל', emoji: '👟', category: 'clothing', level: 1 },
+            { word: 'Hat', translation: 'כובע', emoji: '🧢', category: 'clothing', level: 1 },
+            { word: 'Dress', translation: 'שמלה', emoji: '👗', category: 'clothing', level: 1 },
+            // Level 2 Clothing
+            { word: 'Socks', translation: 'גרביים', emoji: '🧦', category: 'clothing', level: 2 },
+            { word: 'Coat', translation: 'מעיל', emoji: '🧥', category: 'clothing', level: 2 },
+            { word: 'Jacket', translation: 'ז\'קט', emoji: '🧥', category: 'clothing', level: 2 },
+            { word: 'Scarf', translation: 'צעיף', emoji: '🧣', category: 'clothing', level: 2 },
+            { word: 'Gloves', translation: 'כפפות', emoji: '🧤', category: 'clothing', level: 2 },
+            { word: 'Glasses', translation: 'משקפיים', emoji: '👓', category: 'clothing', level: 2 },
+            { word: 'Sunglasses', translation: 'משקפי שמש', emoji: '🕶️', category: 'clothing', level: 2 },
+            { word: 'Tie', translation: 'עניבה', emoji: '👔', category: 'clothing', level: 2 },
+            { word: 'Shorts', translation: 'מכנס קצר', emoji: '🩳', category: 'clothing', level: 2 },
+            { word: 'Bikini', translation: 'בגד ים', emoji: '👙', category: 'clothing', level: 2 },
+            { word: 'Purse', translation: 'תיק יד', emoji: '👜', category: 'clothing', level: 2 },
+            { word: 'Backpack', translation: 'תיק גב', emoji: '🎒', category: 'clothing', level: 2 },
+            { word: 'Ring', translation: 'טבעת', emoji: '💍', category: 'clothing', level: 2 },
+            { word: 'Crown', translation: 'כתר', emoji: '👑', category: 'clothing', level: 2 },
+            { word: 'Umbrella', translation: 'מטרייה', emoji: '☂️', category: 'clothing', level: 2 },
+
+            // --- Emotions (15 words) ---
+            { word: 'Happy', translation: 'שמח', emoji: '😊', category: 'emotions', level: 1 },
+            { word: 'Sad', translation: 'עצוב', emoji: '😢', category: 'emotions', level: 1 },
+            { word: 'Angry', translation: 'כועס', emoji: '😠', category: 'emotions', level: 1 },
+            { word: 'Love', translation: 'אהבה', emoji: '❤️', category: 'emotions', level: 1 },
+            { word: 'Funny', translation: 'מצחיק', emoji: '😂', category: 'emotions', level: 1 },
+            // Level 2 Emotions
+            { word: 'Scared', translation: 'מפחד', emoji: '😨', category: 'emotions', level: 2 },
+            { word: 'Surprised', translation: 'מופתע', emoji: '😲', category: 'emotions', level: 2 },
+            { word: 'Tired', translation: 'עייף', emoji: '😴', category: 'emotions', level: 2 },
+            { word: 'Sick', translation: 'חולה', emoji: '🤒', category: 'emotions', level: 2 },
+            { word: 'Cool', translation: 'מגניב', emoji: '😎', category: 'emotions', level: 2 },
+            { word: 'Thinking', translation: 'חושב', emoji: '🤔', category: 'emotions', level: 2 },
+            { word: 'Wink', translation: 'קריצה', emoji: '😉', category: 'emotions', level: 2 },
+            { word: 'Kiss', translation: 'נשיקה', emoji: '😘', category: 'emotions', level: 2 },
+            { word: 'Cry', translation: 'בוכה', emoji: '😭', category: 'emotions', level: 2 },
+            { word: 'Hot', translation: 'חם', emoji: '🥵', category: 'emotions', level: 2 },
+            { word: 'Cold', translation: 'קר', emoji: '🥶', category: 'emotions', level: 2 },
+
+            // --- School (NEW - 15 words) ---
+            { word: 'School', translation: 'בית ספר', emoji: '🏫', category: 'school', level: 1 },
+            { word: 'Book', translation: 'ספר', emoji: '📚', category: 'school', level: 1 },
+            { word: 'Pencil', translation: 'עיפרון', emoji: '✏️', category: 'school', level: 1 },
+            { word: 'Pen', translation: 'עט', emoji: '🖊️', category: 'school', level: 1 },
+            { word: 'Bag', translation: 'תיק', emoji: '🎒', category: 'school', level: 1 },
+            // Level 2 School
+            { word: 'Teacher', translation: 'מורה', emoji: '👩‍🏫', category: 'school', level: 2 },
+            { word: 'Student', translation: 'תלמיד', emoji: '👨‍🎓', category: 'school', level: 2 },
+            { word: 'Computer', translation: 'מחשב', emoji: '💻', category: 'school', level: 2 },
+            { word: 'Scissors', translation: 'מספריים', emoji: '✂️', category: 'school', level: 2 },
+            { word: 'Notebook', translation: 'מחברת', emoji: '📓', category: 'school', level: 2 },
+            { word: 'Ruler', translation: 'סרגל', emoji: '📏', category: 'school', level: 2 },
+            { word: 'Paperclip', translation: 'מהדק', emoji: '📎', category: 'school', level: 2 },
+            { word: 'Art', translation: 'אומנות', emoji: '🎨', category: 'school', level: 2 },
+            { word: 'Microscope', translation: 'מיקרוסקופ', emoji: '🔬', category: 'school', level: 2 },
+            { word: 'Trophy', translation: 'גביע', emoji: '🏆', category: 'school', level: 2 },
+
+            // --- Jobs (NEW - 15 words) ---
+            { word: 'Doctor', translation: 'רופא', emoji: '👨‍⚕️', category: 'jobs', level: 1 },
+            { word: 'Police', translation: 'שוטר', emoji: '👮', category: 'jobs', level: 1 },
+            { word: 'Teacher', translation: 'מורה', emoji: '👩‍🏫', category: 'jobs', level: 1 },
+            { word: 'Cook', translation: 'טבח', emoji: '👨‍🍳', category: 'jobs', level: 1 },
+            // Level 2 Jobs
+            { word: 'Firefighter', translation: 'כבאי', emoji: '🧑‍🚒', category: 'jobs', level: 2 },
+            { word: 'Farmer', translation: 'חקלאי', emoji: '🧑‍🌾', category: 'jobs', level: 2 },
+            { word: 'Artist', translation: 'צייר', emoji: '👨‍🎨', category: 'jobs', level: 2 },
+            { word: 'Singer', translation: 'זמר', emoji: '🎤', category: 'jobs', level: 2 },
+            { word: 'Detective', translation: 'בלש', emoji: '🕵️', category: 'jobs', level: 2 },
+            { word: 'Astronaut', translation: 'אסטרונאוט', emoji: '🧑‍🚀', category: 'jobs', level: 2 },
+            { word: 'Pilot', translation: 'טייס', emoji: '✈️', category: 'jobs', level: 2 },
+            { word: 'Judge', translation: 'שופט', emoji: '🧑‍⚖️', category: 'jobs', level: 2 },
+            { word: 'Scientist', translation: 'מדען', emoji: '🧑‍🔬', category: 'jobs', level: 2 },
+            { word: 'Mechanic', translation: 'מכונאי', emoji: '🧑‍🔧', category: 'jobs', level: 2 },
+            { word: 'King', translation: 'מלך', emoji: '🤴', category: 'jobs', level: 2 },
+
+            // --- Sports (NEW - 15 words) ---
+            { word: 'Ball', translation: 'כדור', emoji: '⚽', category: 'sports', level: 1 },
+            { word: 'Basketball', translation: 'כדורסל', emoji: '🏀', category: 'sports', level: 1 },
+            { word: 'Tennis', translation: 'טניס', emoji: '🎾', category: 'sports', level: 1 },
+            { word: 'Medal', translation: 'מדליה', emoji: '🥇', category: 'sports', level: 1 },
+            // Level 2 Sports
+            { word: 'Football', translation: 'פוטבול', emoji: '🏈', category: 'sports', level: 2 },
+            { word: 'Volleyball', translation: 'כדורעף', emoji: '🏐', category: 'sports', level: 2 },
+            { word: 'Baseball', translation: 'בייסבול', emoji: '⚾', category: 'sports', level: 2 },
+            { word: 'Rugby', translation: 'רוגבי', emoji: '🏉', category: 'sports', level: 2 },
+            { word: 'Bowling', translation: 'באולינג', emoji: '🎳', category: 'sports', level: 2 },
+            { word: 'Ping Pong', translation: 'פינג פונג', emoji: '🏓', category: 'sports', level: 2 },
+            { word: 'Boxing', translation: 'אגרוף', emoji: '🥊', category: 'sports', level: 2 },
+            { word: 'Karate', translation: 'קראטה', emoji: '🥋', category: 'sports', level: 2 },
+            { word: 'Skating', translation: 'החלקה', emoji: '⛸️', category: 'sports', level: 2 },
+            { word: 'Goal', translation: 'שער', emoji: '🥅', category: 'sports', level: 2 },
+            { word: 'Video Game', translation: 'משחק וידאו', emoji: '🎮', category: 'sports', level: 2 },
+
+            // --- Places (NEW - 15 words) ---
+            { word: 'Home', translation: 'בית', emoji: '🏠', category: 'places', level: 1 },
+            { word: 'School', translation: 'בית ספר', emoji: '🏫', category: 'places', level: 1 },
+            { word: 'Park', translation: 'פארק', emoji: '🏞️', category: 'places', level: 1 },
+            // Level 2 Places
+            { word: 'Hospital', translation: 'בית חולים', emoji: '🏥', category: 'places', level: 2 },
+            { word: 'Bank', translation: 'בנק', emoji: '🏦', category: 'places', level: 2 },
+            { word: 'Hotel', translation: 'מלון', emoji: '🏨', category: 'places', level: 2 },
+            { word: 'Shop', translation: 'חנות', emoji: '🏪', category: 'places', level: 2 },
+            { word: 'Factory', translation: 'מפעל', emoji: '🏭', category: 'places', level: 2 },
+            { word: 'Castle', translation: 'טירה', emoji: '🏰', category: 'places', level: 2 },
+            { word: 'Beach', translation: 'חוף', emoji: '🏖️', category: 'places', level: 2 },
+            { word: 'Desert', translation: 'מדבר', emoji: '🏜️', category: 'places', level: 2 },
+            { word: 'Island', translation: 'אי', emoji: '🏝️', category: 'places', level: 2 },
+            { word: 'Stadium', translation: 'אצטדיון', emoji: '🏟️', category: 'places', level: 2 },
+            { word: 'Tent', translation: 'אוהל', emoji: '⛺', category: 'places', level: 2 },
+            { word: 'City', translation: 'עיר', emoji: '🏙️', category: 'places', level: 2 },
+
+            // --- Actions / Verbs (NEW - 20 words) ---
+            { word: 'Run', translation: 'לרוץ', emoji: '🏃', category: 'actions', level: 1 },
+            { word: 'Walk', translation: 'ללכת', emoji: '🚶', category: 'actions', level: 1 },
+            { word: 'Eat', translation: 'לאכול', emoji: '🍽️', category: 'actions', level: 1 }, // Used plate for eat action
+            { word: 'Sleep', translation: 'לישון', emoji: '🛌', category: 'actions', level: 1 },
+            { word: 'Smile', translation: 'לחייך', emoji: '😊', category: 'actions', level: 1 },
+            // Level 2 Actions
+            { word: 'Jump', translation: 'לקפוץ', emoji: '🦘', category: 'actions', level: 2 }, // Kangaroo for jump
+            { word: 'Swim', translation: 'לשחות', emoji: '🏊', category: 'actions', level: 2 },
+            { word: 'Dance', translation: 'לרקוד', emoji: '💃', category: 'actions', level: 2 },
+            { word: 'Sing', translation: 'לשיר', emoji: '🎤', category: 'actions', level: 2 },
+            { word: 'Read', translation: 'לקרוא', emoji: '📖', category: 'actions', level: 2 },
+            { word: 'Write', translation: 'לכתוב', emoji: '✍️', category: 'actions', level: 2 },
+            { word: 'Listen', translation: 'להקשיב', emoji: '👂', category: 'actions', level: 2 },
+            { word: 'Look', translation: 'להסתכל', emoji: '👀', category: 'actions', level: 2 },
+            { word: 'Think', translation: 'לחשוב', emoji: '🤔', category: 'actions', level: 2 },
+            { word: 'Shower', translation: 'להתקלח', emoji: '🚿', category: 'actions', level: 2 },
+            { word: 'Cook', translation: 'לבשל', emoji: '🍳', category: 'actions', level: 2 },
+            { word: 'Cut', translation: 'לגזור', emoji: '✂️', category: 'actions', level: 2 },
+            { word: 'Paint', translation: 'לצייר', emoji: '🎨', category: 'actions', level: 2 },
+            { word: 'Drive', translation: 'לנהוג', emoji: '🚗', category: 'actions', level: 2 },
+            { word: 'Fly', translation: 'לעוף', emoji: '🕊️', category: 'actions', level: 2 },
+        ];
+
+        // --- SENTENCES DATABASE ---
+        const sentencesDB = [
+            // Original 20
+            { full: "The Dog is barking", missing: "Dog", display: "The ___ is barking", translation: "הכלב נובח", options: ["Cat", "Fish", "Bird"] },
+            { full: "I eat a green Apple", missing: "Apple", display: "I eat a green ___", translation: "אני אוכל תפוח ירוק", options: ["Banana", "Pizza", "Egg"] },
+            { full: "The Sky is blue", missing: "Blue", display: "The Sky is ___", translation: "השמיים כחולים", options: ["Red", "Green", "Yellow"] },
+            { full: "I have a red Car", missing: "Car", display: "I have a red ___", translation: "יש לי מכונית אדומה", options: ["Bus", "Bike", "Train"] },
+            { full: "The Sun is hot", missing: "Sun", display: "The ___ is hot", translation: "השמש חמה", options: ["Moon", "Star", "Cloud"] },
+            { full: "I wash my Hands", missing: "Hand", display: "I wash my ___s", translation: "אני שוטף את הידיים", options: ["Foot", "Nose", "Eye"] },
+            { full: "The Fish swims", missing: "Fish", display: "The ___ swims", translation: "הדג שוחה", options: ["Bird", "Cat", "Lion"] },
+            { full: "I sleep in a Bed", missing: "Bed", display: "I sleep in a ___", translation: "אני ישן במיטה", options: ["Chair", "Table", "Box"] },
+            { full: "The Cat says Meow", missing: "Cat", display: "The ___ says Meow", translation: "החתול אומר מיאו", options: ["Dog", "Cow", "Pig"] },
+            { full: "I wear a Shirt", missing: "Shirt", display: "I wear a ___", translation: "אני לובש חולצה", options: ["Shoe", "Hat", "Pants"] },
+            { full: "The Tree is green", missing: "Tree", display: "The ___ is green", translation: "העץ ירוק", options: ["Flower", "Sun", "Water"] },
+            { full: "I kick the Ball", missing: "Ball", display: "I kick the ___", translation: "אני בועט בכדור", options: ["Book", "Pen", "Phone"] },
+            { full: "The Lion is strong", missing: "Lion", display: "The ___ is strong", translation: "האריה חזק", options: ["Mouse", "Rabbit", "Ant"] },
+            { full: "I drink Milk", missing: "Milk", display: "I drink ___", translation: "אני שותה חלב", options: ["Bread", "Pizza", "Cake"] },
+            { full: "The Elephant is big", missing: "Elephant", display: "The ___ is big", translation: "הפיל גדול", options: ["Mouse", "Ant", "Fly"] },
+            { full: "I have two Eyes", missing: "Eye", display: "I have two ___s", translation: "יש לי שתי עיניים", options: ["Nose", "Mouth", "Head"] },
+            { full: "The Bird can fly", missing: "Bird", display: "The ___ can fly", translation: "הציפור יכולה לעוף", options: ["Dog", "Cat", "Fish"] },
+            { full: "I go to School", missing: "School", display: "I go to ___", translation: "אני הולך לבית הספר", options: ["Park", "Home", "Shop"] },
+            { full: "The Pizza is yummy", missing: "Pizza", display: "The ___ is yummy", translation: "הפיצה טעימה", options: ["Table", "Chair", "Car"] },
+            { full: "I run fast", missing: "Run", display: "I ___ fast", translation: "אני רץ מהר", options: ["Sleep", "Sit", "Stand"] },
+
+            // New Sentences
+            { full: "The Tiger runs fast", missing: "Tiger", display: "The ___ runs fast", translation: "הנמר רץ מהר", options: ["Turtle", "Snail", "Cat"] },
+            { full: "The Wolf howls at the moon", missing: "Wolf", display: "The ___ howls at the moon", translation: "הזאב מיילל לירח", options: ["Dog", "Fox", "Bear"] },
+            { full: "The Fox is clever", missing: "Fox", display: "The ___ is clever", translation: "השועל פיקח", options: ["Rabbit", "Mouse", "Wolf"] },
+            { full: "The Shark has big teeth", missing: "Shark", display: "The ___ has big teeth", translation: "לכריש יש שיניים גדולות", options: ["Fish", "Whale", "Dolphin"] },
+            { full: "The Dolphin jumps high", missing: "Dolphin", display: "The ___ jumps high", translation: "הדולפין קופץ גבוה", options: ["Fish", "Shark", "Whale"] },
+            { full: "The Penguin walks funny", missing: "Penguin", display: "The ___ walks funny", translation: "הפינגווין הולך מצחיק", options: ["Bird", "Duck", "Chicken"] },
+            { full: "The Camel has a hump", missing: "Camel", display: "The ___ has a hump", translation: "לגמל יש דבשת", options: ["Horse", "Donkey", "Cow"] },
+            { full: "The Goat climbs the mountain", missing: "Goat", display: "The ___ climbs the mountain", translation: "העז מטפסת על ההר", options: ["Sheep", "Cow", "Horse"] },
+            { full: "I peel the Banana", missing: "Banana", display: "I peel the ___", translation: "אני מקלף את הבננה", options: ["Apple", "Orange", "Grapes"] },
+            { full: "The Tomato is red", missing: "Tomato", display: "The ___ is red", translation: "העגבניה אדומה", options: ["Cucumber", "Carrot", "Potato"] },
+            { full: "The Carrot is orange", missing: "Carrot", display: "The ___ is orange", translation: "הגזר כתום", options: ["Tomato", "Cucumber", "Onion"] },
+            { full: "I eat Corn on the cob", missing: "Corn", display: "I eat ___ on the cob", translation: "אני אוכל תירס על הקלח", options: ["Peas", "Beans", "Rice"] },
+            { full: "The Onion makes me cry", missing: "Onion", display: "The ___ makes me cry", translation: "הבצל גורם לי לבכות", options: ["Garlic", "Potato", "Tomato"] },
+            { full: "I like Sushi very much", missing: "Sushi", display: "I like ___ very much", translation: "אני אוהב סושי מאוד", options: ["Pizza", "Burger", "Fries"] },
+            { full: "The Window is open", missing: "Window", display: "The ___ is open", translation: "החלון פתוח", options: ["Door", "Wall", "Floor"] },
+            { full: "I brush with Toothbrush", missing: "Toothbrush", display: "I brush with ___", translation: "אני מצחצח עם מברשת שיניים", options: ["Comb", "Brush", "Soap"] },
+            { full: "I use Soap in bath", missing: "Soap", display: "I use ___ in bath", translation: "אני משתמש בסבון באמבטיה", options: ["Shampoo", "Water", "Towel"] },
+            { full: "I watch TV", missing: "Television", display: "I watch ___", translation: "אני צופה בטלוויזיה", options: ["Radio", "Phone", "Computer"] },
+            { full: "The Umbrella keeps me dry", missing: "Umbrella", display: "The ___ keeps me dry", translation: "המטריה שומרת עלי יבש", options: ["Hat", "Coat", "Boots"] },
+            { full: "The Leaf falls from tree", missing: "Leaf", display: "The ___ falls from tree", translation: "העלה נופל מהעץ", options: ["Fruit", "Branch", "Flower"] },
+            { full: "The Cactus has spikes", missing: "Cactus", display: "The ___ has spikes", translation: "לקקטוס יש קוצים", options: ["Flower", "Tree", "Bush"] },
+            { full: "The Earth is round", missing: "Earth", display: "The ___ is round", translation: "כדור הארץ עגול", options: ["Moon", "Sun", "Mars"] },
+            { full: "The Lightning flashes", missing: "Lightning", display: "The ___ flashes", translation: "הברק מבזיק", options: ["Thunder", "Rain", "Wind"] },
+            { full: "The Tornado spins round", missing: "Tornado", display: "The ___ spins round", translation: "הטורנדו מסתובב", options: ["Wind", "Rain", "Storm"] },
+            { full: "The Bus goes to school", missing: "Bus", display: "The ___ goes to school", translation: "האוטובוס נוסע לבית הספר", options: ["Car", "Bike", "Train"] },
+            { full: "I call a Taxi", missing: "Taxi", display: "I call a ___", translation: "אני מזמין מונית", options: ["Bus", "Car", "Uber"] },
+            { full: "The Ambulance goes wee-woo", missing: "Ambulance", display: "The ___ goes wee-woo", translation: "האמבולנס עושה ווי-וו", options: ["Police Car", "Fire Truck", "Car"] },
+            { full: "The Tractor is on farm", missing: "Tractor", display: "The ___ is on farm", translation: "הטרקטור בחווה", options: ["Car", "Truck", "Bike"] },
+            { full: "I ride my Scooter", missing: "Scooter", display: "I ride my ___", translation: "אני רוכב על הקורקינט שלי", options: ["Bike", "Skateboard", "Car"] },
+            { full: "The Rocket goes to space", missing: "Rocket", display: "The ___ goes to space", translation: "הטיל טס לחלל", options: ["Plane", "Helicopter", "Bird"] },
+            { full: "The Anchor stops the ship", missing: "Anchor", display: "The ___ stops the ship", translation: "העוגן עוצר את האונייה", options: ["Sail", "Rope", "Wheel"] },
+            { full: "I stick out my Tongue", missing: "Tongue", display: "I stick out my ___", translation: "אני מוציא את הלשון", options: ["Teeth", "Lips", "Nose"] },
+            { full: "I paint my Nail", missing: "Nail", display: "I paint my ___s", translation: "אני צובעת את הציפורניים", options: ["Finger", "Toe", "Hand"] },
+            { full: "The Bone is white", missing: "Bone", display: "The ___ is white", translation: "העצם לבנה", options: ["Tooth", "Skin", "Blood"] },
+            { full: "I have five Fingers", missing: "Finger", display: "I have five ___s", translation: "יש לי חמש אצבעות", options: ["Toes", "Arms", "Legs"] },
+            { full: "I lift with my Arm", missing: "Arm", display: "I lift with my ___", translation: "אני מרים עם הזרוע שלי", options: ["Leg", "Hand", "Finger"] },
+            { full: "The Gold shines bright", missing: "Gold", display: "The ___ shines bright", translation: "הזהב זוהר", options: ["Silver", "Bronze", "Iron"] },
+            { full: "The Silver is shiny", missing: "Silver", display: "The ___ is shiny", translation: "הכסף מבריק", options: ["Gold", "Copper", "Metal"] },
+            { full: "I wear a Tie to work", missing: "Tie", display: "I wear a ___ to work", translation: "אני עונב עניבה לעבודה", options: ["Scarf", "Belt", "Hat"] },
+            { full: "I carry a Backpack", missing: "Backpack", display: "I carry a ___", translation: "אני סוחב תיק גב", options: ["Purse", "Bag", "Suitcase"] },
+            { full: "The Purse has money", missing: "Purse", display: "The ___ has money", translation: "בתיק יש כסף", options: ["Wallet", "Pocket", "Bag"] },
+            { full: "I put on my Jacket", missing: "Jacket", display: "I put on my ___", translation: "אני לובש את הז'קט שלי", options: ["Coat", "Sweater", "Shirt"] },
+            { full: "The Scarf keeps neck warm", missing: "Scarf", display: "The ___ keeps neck warm", translation: "הצעיף שומר על הצוואר חם", options: ["Hat", "Gloves", "Coat"] },
+            { full: "The Gloves keep hands warm", missing: "Gloves", display: "The ___ keep hands warm", translation: "הכפפות שומרות על הידיים חמות", options: ["Socks", "Shoes", "Hat"] },
+            { full: "I look Cool in sunglasses", missing: "Cool", display: "I look ___ in sunglasses", translation: "אני נראה מגניב במשקפי שמש", options: ["Hot", "Cold", "Funny"] },
+            { full: "I blow a Kiss", missing: "Kiss", display: "I blow a ___", translation: "אני שולח נשיקה", options: ["Hug", "Wave", "Smile"] },
+            { full: "I give a Wink", missing: "Wink", display: "I give a ___", translation: "אני קורץ", options: ["Smile", "Frown", "Laugh"] },
+            { full: "I am Sick in bed", missing: "Sick", display: "I am ___ in bed", translation: "אני חולה במיטה", options: ["Happy", "Sad", "Tired"] },
+            { full: "I am Scared of ghosts", missing: "Scared", display: "I am ___ of ghosts", translation: "אני מפחד מרוחות", options: ["Happy", "Brave", "Sad"] },
+            { full: "I use a Ruler to measure", missing: "Ruler", display: "I use a ___ to measure", translation: "אני משתמש בסרגל למדוד", options: ["Pencil", "Pen", "Eraser"] },
+            { full: "I use a Paperclip", missing: "Paperclip", display: "I use a ___", translation: "אני משתמש במהדק", options: ["Stapler", "Tape", "Glue"] },
+            { full: "I look in Microscope", missing: "Microscope", display: "I look in ___", translation: "אני מסתכל במיקרוסקופ", options: ["Telescope", "Glasses", "Binoculars"] },
+            { full: "The Judge has a hammer", missing: "Judge", display: "The ___ has a hammer", translation: "לשופט יש פטיש", options: ["Lawyer", "Police", "Guard"] },
+            { full: "The Mechanic fixes cars", missing: "Mechanic", display: "The ___ fixes cars", translation: "המכונאי מתקן מכוניות", options: ["Driver", "Pilot", "Engineer"] },
+            { full: "The Scientist does magic", missing: "Scientist", display: "The ___ does magic", translation: "המדען עושה קסמים", options: ["Teacher", "Doctor", "Artist"] },
+            { full: "I play Volleyball on beach", missing: "Volleyball", display: "I play ___ on beach", translation: "אני משחק כדורעף בחוף", options: ["Football", "Soccer", "Tennis"] },
+            { full: "I play Rugby with friends", missing: "Rugby", display: "I play ___ with friends", translation: "אני משחק רוגבי עם חברים", options: ["Football", "Soccer", "Tennis"] },
+            { full: "I go Bowling", missing: "Bowling", display: "I go ___", translation: "אני הולך לבאולינג", options: ["Swimming", "Running", "Skating"] },
+            { full: "I do Karate chop", missing: "Karate", display: "I do ___ chop", translation: "אני עושה מכת קראטה", options: ["Judo", "Boxing", "Kung Fu"] },
+            { full: "I score a Goal", missing: "Goal", display: "I score a ___", translation: "אני מבקיע גול", options: ["Point", "Basket", "Touchdown"] },
+            // + MORE
+            { full: "The Bear likes honey", missing: "Bear", display: "The ___ likes honey", translation: "הדוב אוהב דבש", options: ["Lion", "Tiger", "Wolf"] },
+            { full: "The Bee makes honey", missing: "Bee", display: "The ___ makes honey", translation: "הדבורה מכינה דבש", options: ["Fly", "Ant", "Spider"] },
+            { full: "The Frog jumps in water", missing: "Frog", display: "The ___ jumps in water", translation: "הצפרדע קופצת למים", options: ["Fish", "Turtle", "Duck"] },
+            { full: "The Whale is very big", missing: "Whale", display: "The ___ is very big", translation: "הלוויתן גדול מאוד", options: ["Fish", "Shark", "Dolphin"] },
+            { full: "The Owl sleeps in the day", missing: "Owl", display: "The ___ sleeps in the day", translation: "הינשוף ישן ביום", options: ["Bird", "Bat", "Eagle"] },
+            { full: "The Sheep has white wool", missing: "Sheep", display: "The ___ has white wool", translation: "לכבשה יש צמר לבן", options: ["Goat", "Cow", "Horse"] },
+            { full: "The Camel lives in desert", missing: "Camel", display: "The ___ lives in desert", translation: "הגמל חי במדבר", options: ["Horse", "Lion", "Tiger"] },
+            { full: "I bake a Cake", missing: "Cake", display: "I bake a ___", translation: "אני אופה עוגה", options: ["Bread", "Pizza", "Pie"] },
+            { full: "The Cookie is sweet", missing: "Cookie", display: "The ___ is sweet", translation: "העוגייה מתוקה", options: ["Bread", "Meat", "Egg"] },
+            { full: "The Popcorn goes pop", missing: "Popcorn", display: "The ___ goes pop", translation: "הפופקורן עושה פופ", options: ["Corn", "Candy", "Chip"] },
+            { full: "I love Chocolate", missing: "Chocolate", display: "I love ___", translation: "אני אוהב שוקולד", options: ["Candy", "Cake", "Ice Cream"] },
+            { full: "The Strawberry is red", missing: "Strawberry", display: "The ___ is red", translation: "התות אדום", options: ["Apple", "Cherry", "Tomato"] },
+            { full: "I cook Rice", missing: "Rice", display: "I cook ___", translation: "אני מבשל אורז", options: ["Pasta", "Meat", "Soup"] },
+            { full: "I play the Guitar", missing: "Guitar", display: "I play the ___", translation: "אני מנגן בגיטרה", options: ["Piano", "Drum", "Violin"] },
+            { full: "The Candle gives light", missing: "Candle", display: "The ___ gives light", translation: "הנר נותן אור", options: ["Lamp", "Sun", "Fire"] },
+            { full: "I lock door with Key", missing: "Key", display: "I lock door with ___", translation: "אני נועל דלת עם מפתח", options: ["Lock", "Hand", "Pen"] },
+            { full: "I write in Notebook", missing: "Notebook", display: "I write in ___", translation: "אני כותב במחברת", options: ["Book", "Paper", "Desk"] },
+            { full: "The Light Bulb is bright", missing: "Light Bulb", display: "The ___ is bright", translation: "הנורה בהירה", options: ["Sun", "Moon", "Star"] },
+            { full: "The Rainbow has colors", missing: "Rainbow", display: "The ___ has colors", translation: "לקשת יש צבעים", options: ["Cloud", "Sun", "Sky"] },
+            { full: "The Mountain is high", missing: "Mountain", display: "The ___ is high", translation: "ההר גבוה", options: ["Hill", "Tree", "Building"] },
+            { full: "The Ocean is deep", missing: "Ocean", display: "The ___ is deep", translation: "האוקיינוס עמוק", options: ["River", "Lake", "Pool"] },
+            { full: "The Volcano is hot", missing: "Volcano", display: "The ___ is hot", translation: "הר הגעש חם", options: ["Fire", "Sun", "Oven"] },
+            { full: "The Cloud is fluffy", missing: "Cloud", display: "The ___ is fluffy", translation: "הענן רך", options: ["Sheep", "Cotton", "Snow"] },
+            { full: "I play in the Park", missing: "Park", display: "I play in the ___", translation: "אני משחק בפארק", options: ["School", "Home", "Garden"] },
+            { full: "I build on the Beach", missing: "Beach", display: "I build on the ___", translation: "אני בונה בחוף", options: ["Sand", "Sea", "Land"] },
+            { full: "The City is busy", missing: "City", display: "The ___ is busy", translation: "העיר עמוסה", options: ["Town", "Village", "Farm"] },
+            { full: "I sleep in a Tent", missing: "Tent", display: "I sleep in a ___", translation: "אני ישן באוהל", options: ["House", "Bed", "Room"] },
+            { full: "I put on my Socks", missing: "Socks", display: "I put on my ___", translation: "אני שם את הגרביים שלי", options: ["Shoes", "Pants", "Shirt"] },
+            { full: "I wear Coat in winter", missing: "Coat", display: "I wear ___ in winter", translation: "אני לובש מעיל בחורף", options: ["Shirt", "Hat", "Scarf"] },
+            { full: "I wear Glasses to see", missing: "Glasses", display: "I wear ___ to see", translation: "אני מרכיב משקפיים כדי לראות", options: ["Eyes", "Hat", "Mask"] },
+            { full: "My Heart beats", missing: "Heart", display: "My ___ beats", translation: "הלב שלי דופק", options: ["Drum", "Head", "Hand"] },
+            { full: "I think with my Brain", missing: "Brain", display: "I think with my ___", translation: "אני חושב עם המוח שלי", options: ["Head", "Mind", "Heart"] },
+            { full: "I speak with my Mouth", missing: "Mouth", display: "I speak with my ___", translation: "אני מדבר עם הפה שלי", options: ["Tongue", "Lips", "Teeth"] },
+            { full: "I clap my Hands", missing: "Hand", display: "I clap my ___s", translation: "אני מוחא כפיים", options: ["Feet", "Arms", "Legs"] },
+            { full: "The Firefighter puts water", missing: "Firefighter", display: "The ___ puts water", translation: "הכבאי שם מים", options: ["Police", "Doctor", "Cook"] },
+            { full: "The Farmer grows food", missing: "Farmer", display: "The ___ grows food", translation: "החקלאי מגדל אוכל", options: ["Cook", "Teacher", "Driver"] },
+            { full: "The Pilot flies plane", missing: "Pilot", display: "The ___ flies plane", translation: "הטייס מטיס מטוס", options: ["Driver", "Captain", "Astronaut"] },
+            { full: "The Astronaut in space", missing: "Astronaut", display: "The ___ in space", translation: "האסטרונאוט בחלל", options: ["Pilot", "Star", "Moon"] },
+            { full: "The Singer sings song", missing: "Singer", display: "The ___ sings song", translation: "הזמר שר שיר", options: ["Teacher", "Actor", "Dancer"] },
+            { full: "The Cook makes food", missing: "Cook", display: "The ___ makes food", translation: "הטבח מכין אוכל", options: ["Mom", "Dad", "Baker"] },
+            { full: "I play Basketball", missing: "Basketball", display: "I play ___", translation: "אני משחק כדורסל", options: ["Football", "Tennis", "Golf"] },
+            { full: "I hit Tennis ball", missing: "Tennis", display: "I hit ___ ball", translation: "אני חובט בכדור טניס", options: ["Golf", "Base", "Basket"] },
+            { full: "I win a Medal", missing: "Medal", display: "I win a ___", translation: "אני זוכה במדליה", options: ["Cup", "Prize", "Game"] },
+            { full: "I Walk to school", missing: "Walk", display: "I ___ to school", translation: "אני הולך לבית הספר", options: ["Run", "Drive", "Fly"] },
+            { full: "I Sleep at night", missing: "Sleep", display: "I ___ at night", translation: "אני ישן בלילה", options: ["Wake", "Eat", "Play"] },
+            { full: "I Dance to music", missing: "Dance", display: "I ___ to music", translation: "אני רוקד למוזיקה", options: ["Sing", "Jump", "Run"] },
+            { full: "I Listen to story", missing: "Listen", display: "I ___ to story", translation: "אני מקשיב לסיפור", options: ["Read", "Write", "Speak"] },
+            { full: "I Drive a car", missing: "Drive", display: "I ___ a car", translation: "אני נוהג במכונית", options: ["Ride", "Walk", "Run"] },
+            { full: "The Toilet is clean", missing: "Toilet", display: "The ___ is clean", translation: "השירותים נקיים", options: ["Bath", "Sink", "Room"] },
+            { full: "I take a Shower", missing: "Shower", display: "I take a ___", translation: "אני מתקלח", options: ["Bath", "Swim", "Wash"] },
+            { full: "The Battery is full", missing: "Battery", display: "The ___ is full", translation: "הסוללה מלאה", options: ["Box", "Cup", "Bag"] },
+            { full: "I give a Gift", missing: "Gift", display: "I give a ___", translation: "אני נותן מתנה", options: ["Box", "Toy", "Card"] },
+            { full: "The Balloon goes up", missing: "Balloon", display: "The ___ goes up", translation: "הבלון עולה למעלה", options: ["Ball", "Bird", "Plane"] },
+            { full: "I play the Piano", missing: "Piano", display: "I play the ___", translation: "אני מנגן בפסנתר", options: ["Guitar", "Drum", "Flute"] },
+            { full: "I hit the Drum", missing: "Drum", display: "I hit the ___", translation: "אני מכה בתוף", options: ["Piano", "Guitar", "Bell"] }
+        ];
+
+        // --- State ---
+        let currentWordObj = null;
+        let score = 0;
+        let streak = 0;
+        let levelProgress = 0; 
+        let isSfxEnabled = true;
+        let isAutoSpeechEnabled = true;
+        let isAnswerReveal = false;
+        let autoNextTimeout = null;
+        let isRefractoryPeriod = false; 
+        
+        // --- Audio Context ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playTone(freq, type, duration, gainValue = 0.1) {
+            if (!isSfxEnabled) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            // Start loud and fade out quickly
+            gain.gain.setValueAtTime(gainValue, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playSuccessSound() {
+            // Ding-Dong effect
+            playTone(600, 'sine', 0.1, 0.2);
+            setTimeout(() => playTone(800, 'sine', 0.2, 0.2), 100);
+        }
+
+        function playErrorSound() {
+            playTone(200, 'sawtooth', 0.3, 0.2);
+            setTimeout(() => playTone(150, 'sawtooth', 0.3, 0.2), 150);
+        }
+
+        function playLevelUpSound() {
+            if (!isSfxEnabled) return;
+            [400, 500, 600, 800].forEach((freq, i) => {
+                setTimeout(() => playTone(freq, 'square', 0.2, 0.2), i * 150);
+            });
+        }
+
+        // Improved Blank Sound: Louder "Pop"
+        function playBlankSound() {
+            if (!isSfxEnabled) return;
+            // Short, punchy sine wave at 400Hz (triangle is a bit softer, lets use sine with higher volume)
+            playTone(400, 'sine', 0.15, 0.3); 
+        }
+
+        // --- Logic ---
+        function getFilteredWords() {
+            const category = document.getElementById('category-select').value;
+            const levelStr = document.getElementById('level-select').value;
+            
+            let filtered = wordsDB;
+
+            if (category !== 'all') {
+                filtered = filtered.filter(w => w.category === category);
+            }
+
+            if (levelStr === 'basic') {
+                filtered = filtered.filter(w => w.level === 1);
+            } else if (levelStr === 'advanced') {
+                filtered = filtered.filter(w => w.level === 2);
+            }
+
+            return filtered;
+        }
+
+        function getRandomWord() {
+            const filtered = getFilteredWords();
+            if (filtered.length === 0) return wordsDB[Math.floor(Math.random() * wordsDB.length)];
+            return filtered[Math.floor(Math.random() * filtered.length)];
+        }
+
+        function getRandomSentence() {
+            return sentencesDB[Math.floor(Math.random() * sentencesDB.length)];
+        }
+
+        // Generate options depending on game mode
+        function generateOptions() {
+            if (gameMode === 'sentences') {
+                // For sentences, currentWordObj IS the sentence object
+                // We need to find the word object corresponding to the missing word to get its emoji
+                const correctWordStr = currentWordObj.missing;
+                const correctWordData = wordsDB.find(w => w.word === correctWordStr) || { word: correctWordStr, emoji: '❓' };
+                
+                let options = [correctWordData];
+                
+                // Add distractors
+                currentWordObj.options.forEach(optStr => {
+                    const optData = wordsDB.find(w => w.word === optStr) || { word: optStr, emoji: '' };
+                    options.push(optData);
+                });
+                
+                return options.sort(() => Math.random() - 0.5);
+            } else {
+                // Word mode
+                const filtered = getFilteredWords();
+                const numOptions = 4;
+                const options = [currentWordObj];
+                let pool = filtered.length >= numOptions ? filtered : wordsDB;
+
+                let safety = 0;
+                while (options.length < numOptions && safety < 50) {
+                    safety++;
+                    const random = pool[Math.floor(Math.random() * pool.length)];
+                    if (!options.find(o => o.word === random.word)) {
+                        options.push(random);
+                    }
+                }
+                return options.sort(() => Math.random() - 0.5);
+            }
+        }
+
+        function renderOptionsGrid(options) {
+             const grid = document.getElementById('options-grid');
+             grid.innerHTML = '';
+             grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(130px, 1fr))';
+             
+             options.forEach(opt => {
+                 const card = document.createElement('div');
+                 card.className = 'option-card';
+                 // If sentence mode, options might have missing emojis if not in DB, handle gracefully
+                 const displayEmoji = opt.emoji || '❓';
+                 card.innerHTML = `<div class="option-emoji">${displayEmoji}</div>`;
+                 card.onclick = () => checkAnswer(opt, card);
+                 grid.appendChild(card);
+             });
+        }
+
+        function initGame() {
+            if (autoNextTimeout) {
+                clearTimeout(autoNextTimeout);
+                autoNextTimeout = null;
+            }
+
+            isAnswerReveal = false;
+            isRefractoryPeriod = false;
+            
+            document.getElementById('hint-btn').style.display = 'flex';
+            const transEl = document.getElementById('translation');
+            const wordEl = document.getElementById('current-word');
+            const speakerIcon = document.getElementById('big-speaker');
+            const actionBtns = document.getElementById('action-buttons');
+
+            // Reset Display state
+            wordEl.classList.remove('hidden-word');
+            speakerIcon.style.display = 'none';
+            actionBtns.style.display = 'flex';
+            
+            // Mode Logic
+            if (gameMode === 'sentences') {
+                currentWordObj = getRandomSentence();
+                updateDisplay(currentWordObj.display);
+            } else {
+                currentWordObj = getRandomWord();
+                updateDisplay(currentWordObj.word);
+            }
+
+            // Listening Mode Overrides
+            if (gameMode === 'listening') {
+                wordEl.classList.add('hidden-word');
+                speakerIcon.style.display = 'block';
+                actionBtns.style.display = 'none'; // Hide small speaker/hint in listening mode initially
+                // document.getElementById('hint-btn').style.display = 'none';
+            }
+            
+            // Fix Flash
+            transEl.style.transition = 'none';
+            transEl.classList.remove('visible'); 
+            transEl.style.opacity = '0';
+            void transEl.offsetWidth;
+            transEl.textContent = currentWordObj.translation;
+            
+            setTimeout(() => {
+                transEl.style.transition = '';
+                transEl.style.opacity = '';
+            }, 50);
+
+            // Render Options
+            const options = generateOptions();
+            renderOptionsGrid(options);
+
+            // Auto-speak logic
+            if(isAutoSpeechEnabled) {
+                if (gameMode === 'words') {
+                    setTimeout(() => speakCurrentWord(false), 500);
+                } else if (gameMode === 'listening') {
+                    // Always speak in listening mode, even if auto is off? 
+                    // Usually listening mode implies auto-speak start, but let's respect the toggle or maybe force it once.
+                    // Let's force it for listening mode as the user sees nothing.
+                    setTimeout(() => speakCurrentWord(true), 500);
+                }
+            }
+        }
+
+        function updateDisplay(text) {
+            const el = document.getElementById('current-word');
+            el.textContent = text;
+            
+            if (gameMode === 'sentences') {
+                el.classList.add('sentence-mode');
+            } else {
+                el.classList.remove('sentence-mode');
+            }
+        }
+        
+        function showHint() {
+            if(isAnswerReveal) return;
+            document.getElementById('translation').classList.add('visible');
+        }
+
+        function updateProgressBar() {
+            const percentage = (levelProgress / 10) * 100;
+            document.getElementById('progress-bar').style.width = percentage + '%';
+        }
+        
+        function shuffleWrongAnswers() {
+            const options = generateOptions();
+            renderOptionsGrid(options);
+            isRefractoryPeriod = false;
+        }
+
+        function checkAnswer(selectedOpt, cardElement) {
+            if (isAnswerReveal || isRefractoryPeriod) return; 
+
+            let isCorrect = false;
+            if (gameMode === 'sentences') {
+                // In sentence mode, selectedOpt is a word object, compare with missing word string
+                if (selectedOpt.word === currentWordObj.missing) isCorrect = true;
+            } else {
+                if (selectedOpt.word === currentWordObj.word) isCorrect = true;
+            }
+
+            if (isCorrect) {
+                // Correct
+                isAnswerReveal = true;
+                cardElement.classList.add('correct');
+                document.getElementById('translation').classList.add('visible');
+                
+                // If sentence, fill the blank!
+                if (gameMode === 'sentences') {
+                    updateDisplay(currentWordObj.full);
+                    if(isAutoSpeechEnabled) speakText(currentWordObj.full);
+                } 
+                // If listening mode, reveal word
+                else if (gameMode === 'listening') {
+                    document.getElementById('current-word').classList.remove('hidden-word');
+                    document.getElementById('big-speaker').style.display = 'none';
+                    document.getElementById('action-buttons').style.display = 'flex';
+                    playSuccessSound();
+                }
+                else {
+                    // Normal mode
+                    playSuccessSound(); 
+                }
+                
+                // Standard Success Logic
+                if (gameMode !== 'sentences' && gameMode !== 'listening') playSuccessSound(); 
+                else if (gameMode === 'sentences') setTimeout(playSuccessSound, 200); 
+
+                score += 10;
+                streak += 1;
+                levelProgress += 1;
+                
+                if (levelProgress >= 10) {
+                    playLevelUpSound();
+                    showFeedback('כל הכבוד! שלב הושלם! 🏆');
+                    confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+                    levelProgress = 0;
+                } else {
+                    showFeedback();
+                    confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 }, colors: ['#FF6B6B', '#4ECDC4', '#FFE66D'] });
+                }
+                
+                updateStats();
+                updateProgressBar();
+                autoNextTimeout = setTimeout(initGame, 2000); 
+            } else {
+                // Wrong
+                cardElement.classList.add('wrong');
+                playErrorSound();
+                streak = 0;
+                if (navigator.vibrate) navigator.vibrate(200);
+                updateStats();
+                
+                isRefractoryPeriod = true;
+                setTimeout(() => {
+                    shuffleWrongAnswers();
+                }, 1000);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+        }
+
+        function showFeedback(customText = null) {
+            const msgs = ['מעולה!', 'כל הכבוד!', 'איזה יופי!', 'מצוין!', 'אלוף!'];
+            const msg = customText || msgs[Math.floor(Math.random() * msgs.length)];
+            const el = document.getElementById('feedback-msg');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 1500);
+        }
+
+        function speakText(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8; 
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Modified speak function for mixed content
+        function speakSentenceWithBlank(textBefore, textAfter) {
+            // For forced clicks, we ignore the auto-speech toggle
+            window.speechSynthesis.cancel();
+            
+            const utter1 = new SpeechSynthesisUtterance(textBefore);
+            utter1.lang = 'en-US';
+            utter1.rate = 0.8;
+            
+            utter1.onend = () => {
+                playBlankSound();
+                // We need a slight delay after sound before continuing speech
+                setTimeout(() => {
+                    if (textAfter && textAfter.trim().length > 0) {
+                        const utter2 = new SpeechSynthesisUtterance(textAfter);
+                        utter2.lang = 'en-US';
+                        utter2.rate = 0.8;
+                        window.speechSynthesis.speak(utter2);
+                    }
+                }, 400); // Wait for sound to finish roughly
+            };
+            
+            window.speechSynthesis.speak(utter1);
+        }
+
+        function speakCurrentWord(force = false) {
+            // Force bypasses the auto-check for manual clicks
+            if (!force && !isAutoSpeechEnabled) return;
+            
+            if (gameMode === 'sentences') {
+                if (isAnswerReveal) {
+                     speakText(currentWordObj.full);
+                } else {
+                     // Split by the underscores
+                     const parts = currentWordObj.display.split('___');
+                     speakSentenceWithBlank(parts[0], parts[1]);
+                }
+            } else {
+                speakText(currentWordObj.word);
+            }
+        }
+
+        // --- Event Listeners ---
+        document.getElementById('next-btn').addEventListener('click', initGame);
+        
+        const handleSettingsChange = () => {
+            score = 0; 
+            streak = 0;
+            levelProgress = 0;
+            updateStats();
+            updateProgressBar();
+            initGame();
+        };
+
+        // Handle Mode Change Specifically
+        document.getElementById('game-mode-select').addEventListener('change', function() {
+            gameMode = this.value;
+            handleSettingsChange();
+        });
+
+        document.getElementById('category-select').addEventListener('change', handleSettingsChange);
+        document.getElementById('level-select').addEventListener('change', handleSettingsChange);
+
+        document.getElementById('sfx-toggle').addEventListener('click', function() {
+            isSfxEnabled = !isSfxEnabled;
+            this.classList.toggle('active');
+            this.querySelector('span').textContent = isSfxEnabled ? '🔔 צלילים' : '🔕 שקט';
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        });
+
+        document.getElementById('auto-speech-toggle').addEventListener('click', function() {
+            isAutoSpeechEnabled = !isAutoSpeechEnabled;
+            this.classList.toggle('active');
+            this.querySelector('span').textContent = isAutoSpeechEnabled ? '🗣️ אוטומטי' : '🙊 ידני';
+        });
+
+        window.addEventListener('load', () => {
+            initGame();
+            document.body.addEventListener('click', () => {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+            }, {once:true});
+        });
+
+    </script>
+</body>
+</html>
