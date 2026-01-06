@@ -36,6 +36,8 @@
             padding: 10px;
             color: var(--text-color);
             overflow-x: hidden;
+            /* Prevent scrolling on mobile game view */
+            overflow-y: auto; 
         }
 
         .container {
@@ -47,15 +49,18 @@
             padding: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.1);
             position: relative;
+            /* Ensure container fits on screen */
+            max-height: 100vh;
+            overflow-y: auto;
         }
 
         /* Progress Bar */
         .progress-container {
             width: 100%;
-            height: 15px;
+            height: 10px; /* Thinner on mobile */
             background-color: #e0e0e0;
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             overflow: hidden;
             position: relative;
         }
@@ -74,47 +79,51 @@
             justify-content: space-between;
             align-items: center;
             background: white;
-            padding: 10px 15px;
-            border-radius: 20px;
-            margin-bottom: 20px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            margin-bottom: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
 
         .stat-group {
             display: flex;
-            gap: 15px;
+            gap: 12px;
         }
 
         .stat-item {
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 1.1rem;
+            gap: 4px;
+            font-size: 1rem;
             font-weight: bold;
         }
 
         /* Controls inside header for settings */
         .settings-group {
             display: flex;
-            gap: 8px;
+            gap: 5px;
             flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
-        .score-icon { font-size: 1.4rem; }
+        .score-icon { font-size: 1.2rem; }
         
         /* Game Area */
         .game-area {
             text-align: center;
             padding: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .word-display {
             background: white;
-            padding: 25px;
-            border-radius: 25px;
-            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             position: relative;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -122,7 +131,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 200px;
+            min-height: 160px; /* Slightly smaller for mobile */
             justify-content: center;
         }
 
@@ -135,14 +144,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             width: 100%;
         }
 
         .english-word {
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: 800;
             color: var(--primary-color);
             cursor: pointer;
@@ -157,15 +166,16 @@
         .english-word.hidden-word {
             opacity: 0;
             pointer-events: none;
-            position: absolute; /* Hide from flow but keep DOM presence */
+            position: absolute;
         }
 
         /* Big Speaker Icon for Listening Mode */
         .big-speaker-icon {
-            font-size: 5rem;
+            font-size: 4.5rem;
             cursor: pointer;
             animation: pulse 2s infinite;
             display: none;
+            margin: 10px;
         }
         
         @keyframes pulse {
@@ -175,25 +185,25 @@
         }
 
         .english-word.sentence-mode {
-            font-size: 2.2rem;
+            font-size: 1.8rem; /* Adjusted for mobile */
         }
 
         .word-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
         }
 
         .action-btn {
             border: none;
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             transition: all 0.2s;
             box-shadow: 0 4px 0 rgba(0,0,0,0.1);
             flex-shrink: 0;
@@ -220,7 +230,7 @@
 
         /* Translation area */
         .translation-area {
-            min-height: 40px;
+            min-height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -228,11 +238,11 @@
         }
 
         .translation-hint {
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: var(--text-color);
-            opacity: 0; /* Hidden by default */
+            opacity: 0;
             transition: opacity 0.3s, transform 0.3s;
-            transform: translateY(10px);
+            transform: translateY(5px);
             font-weight: bold;
         }
 
@@ -244,35 +254,35 @@
         /* Options Grid */
         .options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(2, 1fr); /* Force 2 columns on mobile */
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .option-card {
             background: white;
             border: 3px solid #f0f0f0;
-            border-radius: 20px;
-            padding: 15px;
+            border-radius: 15px;
+            padding: 10px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             justify-content: center;
             align-items: center;
-            aspect-ratio: 1;
+            aspect-ratio: 1.1; /* Slightly rectangular */
             position: relative;
             overflow: hidden;
         }
 
         .option-emoji {
-            font-size: 3.5rem;
+            font-size: 3rem;
             z-index: 2;
         }
 
         .option-card:hover {
-            transform: scale(1.05);
+            transform: scale(1.02);
             border-color: var(--secondary-color);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .option-card.correct {
@@ -291,29 +301,29 @@
         .controls-area {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
-            margin-top: 20px;
-            padding-top: 20px;
+            margin-top: 10px;
+            padding-top: 15px;
             border-top: 2px solid #f0f0f0;
         }
 
         .btn {
             border: none;
-            padding: 10px 20px;
-            border-radius: 15px;
+            padding: 10px 18px;
+            border-radius: 12px;
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            gap: 6px;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.1);
         }
 
         .btn:active {
-            transform: translateY(4px);
+            transform: translateY(3px);
             box-shadow: none;
         }
 
@@ -322,15 +332,16 @@
             color: white;
             width: 100%;
             justify-content: center;
-            font-size: 1.3rem;
-            padding: 15px;
-            margin-bottom: 10px;
+            font-size: 1.2rem;
+            padding: 12px;
+            margin-bottom: 5px;
         }
 
         .btn-secondary {
             background: white;
             color: var(--text-color);
             border: 2px solid #e0e0e0;
+            font-size: 0.9rem;
         }
 
         .btn-secondary.active {
@@ -340,15 +351,15 @@
 
         /* Select styling */
         .custom-select {
-            padding: 8px 12px;
-            border-radius: 12px;
+            padding: 6px 10px;
+            border-radius: 10px;
             border: 2px solid #e0e0e0;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             background: white;
             cursor: pointer;
             outline: none;
             font-family: 'Rubik', sans-serif;
-            min-width: 120px;
+            min-width: 100px;
         }
 
         .custom-select.mode-select {
@@ -360,7 +371,9 @@
         /* Toggle Button Specifics */
         .toggle-btn-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            width: 100%;
+            justify-content: center;
         }
 
         /* Feedback Message */
@@ -370,10 +383,10 @@
             left: 50%;
             transform: translate(-50%, -50%) scale(0);
             background: rgba(255, 255, 255, 0.95);
-            padding: 30px 50px;
-            border-radius: 30px;
+            padding: 20px 40px;
+            border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: 800;
             color: var(--success-color);
             z-index: 100;
@@ -381,6 +394,7 @@
             text-align: center;
             opacity: 0;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 80%;
         }
 
         .feedback-msg.show {
@@ -401,16 +415,37 @@
             20%, 40%, 60%, 80% {transform: translateX(5px);}
         }
 
-        /* Mobile Adjustments */
+        /* Mobile Adjustments specific for small screens */
         @media (max-width: 600px) {
+            .container { 
+                padding: 10px; 
+                border-radius: 15px; 
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
             .english-word { font-size: 2.5rem; }
-            .english-word.sentence-mode { font-size: 1.8rem; }
-            .option-emoji { font-size: 3rem; }
-            .container { padding: 15px; border-radius: 20px; }
-            .stats-bar { flex-direction: column; align-items: stretch; }
-            .stat-group, .settings-group { justify-content: space-between; width: 100%; }
-            .options-grid { grid-template-columns: repeat(2, 1fr); }
-            .btn-primary { position: sticky; bottom: 10px; z-index: 10; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+            .english-word.sentence-mode { font-size: 1.5rem; } 
+            .option-emoji { font-size: 2.8rem; }
+            .stats-bar { flex-direction: row; justify-content: space-between; font-size: 0.9rem; }
+            .settings-group { width: 100%; justify-content: space-between; margin-top: 5px; }
+            .custom-select { width: 48%; min-width: auto; }
+            .game-area { flex: 1; justify-content: space-between; }
+            .options-grid { flex: 1; align-content: center; }
+            .btn-primary { 
+                position: sticky; 
+                bottom: 0; 
+                z-index: 10; 
+                box-shadow: 0 -4px 15px rgba(0,0,0,0.1); 
+                margin-bottom: 0;
+            }
+        }
+        
+        /* Desktop adjustments */
+        @media (min-width: 601px) {
+            .options-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
     </style>
 </head>
@@ -454,7 +489,11 @@
                         <option value="advanced">מתקדמים</option>
                     </select>
                     <!-- Category Selector -->
-                    <select id="category-select" class="custom-select">
+                    <select id="category-select" class="custom-select" style="display:none;"> <!-- Hide category on mobile to save space or move elsewhere? Keeping hidden for cleaner UI or make 3rd row -->
+                        <option value="all">נושא: הכל</option>
+                        <!-- Categories populated in JS if needed, currently static in HTML above but hiding to de-clutter mobile -->
+                    </select>
+                     <select id="category-select-visible" class="custom-select" style="width: 100%; margin-top: 5px;">
                         <option value="all">נושא: הכל</option>
                         <option value="animals">🐰 חיות</option>
                         <option value="food">🍕 אוכל</option>
@@ -1062,7 +1101,7 @@
 
         // --- Logic ---
         function getFilteredWords() {
-            const category = document.getElementById('category-select').value;
+            const category = document.getElementById('category-select-visible').value;
             const levelStr = document.getElementById('level-select').value;
             
             let filtered = wordsDB;
@@ -1129,7 +1168,7 @@
         function renderOptionsGrid(options) {
              const grid = document.getElementById('options-grid');
              grid.innerHTML = '';
-             grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(130px, 1fr))';
+             // Use CSS Grid layout defined in styles
              
              options.forEach(opt => {
                  const card = document.createElement('div');
@@ -1387,7 +1426,8 @@
             handleSettingsChange();
         });
 
-        document.getElementById('category-select').addEventListener('change', handleSettingsChange);
+        // Use the visible category select for mobile friendliness
+        document.getElementById('category-select-visible').addEventListener('change', handleSettingsChange);
         document.getElementById('level-select').addEventListener('change', handleSettingsChange);
 
         document.getElementById('sfx-toggle').addEventListener('click', function() {
