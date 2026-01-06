@@ -280,6 +280,7 @@
             aspect-ratio: 1.1; 
             position: relative;
             overflow: hidden;
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
         }
 
         .option-emoji {
@@ -287,10 +288,19 @@
             z-index: 2;
         }
 
-        .option-card:hover {
-            transform: scale(1.02);
+        /* Hover effect only for devices that support hover (mouse) */
+        @media (hover: hover) {
+            .option-card:hover {
+                transform: scale(1.02);
+                border-color: var(--secondary-color);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+        }
+        
+        /* Active state for touch feedback on mobile */
+        .option-card:active {
+            transform: scale(0.95);
             border-color: var(--secondary-color);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
         .option-card.correct {
