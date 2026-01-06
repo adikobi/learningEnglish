@@ -52,17 +52,20 @@
             /* Ensure container fits on screen */
             max-height: 100vh;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Progress Bar */
         .progress-container {
             width: 100%;
-            height: 10px; /* Thinner on mobile */
+            height: 12px; 
             background-color: #e0e0e0;
             border-radius: 10px;
             margin-bottom: 15px;
             overflow: hidden;
             position: relative;
+            flex-shrink: 0;
         }
 
         .progress-bar {
@@ -85,6 +88,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             flex-wrap: wrap;
             gap: 8px;
+            flex-shrink: 0;
         }
 
         .stat-group {
@@ -117,11 +121,12 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            flex-grow: 1; /* Allow game area to take remaining space */
         }
 
         .word-display {
             background: white;
-            padding: 20px;
+            padding: 15px;
             border-radius: 20px;
             margin-bottom: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
@@ -131,8 +136,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 160px; /* Slightly smaller for mobile */
+            min-height: 140px; 
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .word-display:hover {
@@ -256,7 +262,9 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr); /* Force 2 columns on mobile */
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            flex-grow: 1; /* Allow grid to expand */
+            align-content: center; /* Center items vertically if extra space */
         }
 
         .option-card {
@@ -269,7 +277,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            aspect-ratio: 1.1; /* Slightly rectangular */
+            aspect-ratio: 1.1; 
             position: relative;
             overflow: hidden;
         }
@@ -300,12 +308,13 @@
         /* Controls */
         .controls-area {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            flex-direction: column;
+            gap: 10px;
             justify-content: center;
-            margin-top: 10px;
-            padding-top: 15px;
+            margin-top: 5px;
+            padding-top: 10px;
             border-top: 2px solid #f0f0f0;
+            flex-shrink: 0;
         }
 
         .btn {
@@ -318,6 +327,7 @@
             transition: all 0.2s;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
             box-shadow: 0 3px 0 rgba(0,0,0,0.1);
         }
@@ -331,10 +341,8 @@
             background: var(--secondary-color);
             color: white;
             width: 100%;
-            justify-content: center;
-            font-size: 1.2rem;
-            padding: 12px;
-            margin-bottom: 5px;
+            font-size: 1.3rem;
+            padding: 14px;
         }
 
         .btn-secondary {
@@ -342,6 +350,7 @@
             color: var(--text-color);
             border: 2px solid #e0e0e0;
             font-size: 0.9rem;
+            flex: 1; /* Distribute space evenly */
         }
 
         .btn-secondary.active {
@@ -371,9 +380,9 @@
         /* Toggle Button Specifics */
         .toggle-btn-group {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             width: 100%;
-            justify-content: center;
+            justify-content: space-between;
         }
 
         /* Feedback Message */
@@ -421,8 +430,6 @@
                 padding: 10px; 
                 border-radius: 15px; 
                 height: 100vh;
-                display: flex;
-                flex-direction: column;
             }
             .english-word { font-size: 2.5rem; }
             .english-word.sentence-mode { font-size: 1.5rem; } 
@@ -430,14 +437,15 @@
             .stats-bar { flex-direction: row; justify-content: space-between; font-size: 0.9rem; }
             .settings-group { width: 100%; justify-content: space-between; margin-top: 5px; }
             .custom-select { width: 48%; min-width: auto; }
-            .game-area { flex: 1; justify-content: space-between; }
-            .options-grid { flex: 1; align-content: center; }
             .btn-primary { 
-                position: sticky; 
-                bottom: 0; 
-                z-index: 10; 
-                box-shadow: 0 -4px 15px rgba(0,0,0,0.1); 
+                /* Removed sticky positioning to keep it within flow */
                 margin-bottom: 0;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+            .progress-container {
+                /* Ensure visibility */
+                min-height: 10px;
+                background-color: #ddd;
             }
         }
         
@@ -445,6 +453,19 @@
         @media (min-width: 601px) {
             .options-grid {
                 grid-template-columns: repeat(4, 1fr);
+            }
+            .controls-area {
+                flex-direction: row;
+                align-items: center;
+            }
+            .btn-primary {
+                width: auto;
+                flex-grow: 2;
+                margin-bottom: 0;
+            }
+            .toggle-btn-group {
+                width: auto;
+                gap: 10px;
             }
         }
     </style>
@@ -540,10 +561,6 @@
             </div>
 
             <div class="controls-area">
-                <button id="next-btn" class="btn btn-primary">
-                    <span>הבא</span> ➡️
-                </button>
-                
                 <div class="toggle-btn-group">
                     <button id="auto-speech-toggle" class="btn btn-secondary active" title="הקראה אוטומטית">
                         <span>🗣️ אוטומטי</span>
@@ -552,6 +569,10 @@
                         <span>🔔 צלילים</span>
                     </button>
                 </div>
+                
+                <button id="next-btn" class="btn btn-primary">
+                    <span>הבא</span> ➡️
+                </button>
             </div>
         </main>
     </div>
@@ -902,14 +923,15 @@
         ];
 
         // --- SENTENCES DATABASE ---
+        // Format: missingWord MUST match a word from wordsDB to have an image/emoji.
         const sentencesDB = [
             // Original 20
             { full: "The Dog is barking", missing: "Dog", display: "The ___ is barking", translation: "הכלב נובח", options: ["Cat", "Fish", "Bird"] },
             { full: "I eat a green Apple", missing: "Apple", display: "I eat a green ___", translation: "אני אוכל תפוח ירוק", options: ["Banana", "Pizza", "Egg"] },
-            { full: "The Sky is blue", missing: "Blue", display: "The Sky is ___", translation: "השמיים כחולים", options: ["Red", "Green", "Yellow"] },
+            { full: "The Sky is blue", missing: "Blue", display: "The Sky is ___", translation: "השמיים כחולים", options: ["Red", "Green", "Yellow"] }, // Assuming Blue is in wordsDB
             { full: "I have a red Car", missing: "Car", display: "I have a red ___", translation: "יש לי מכונית אדומה", options: ["Bus", "Bike", "Train"] },
             { full: "The Sun is hot", missing: "Sun", display: "The ___ is hot", translation: "השמש חמה", options: ["Moon", "Star", "Cloud"] },
-            { full: "I wash my Hands", missing: "Hand", display: "I wash my ___s", translation: "אני שוטף את הידיים", options: ["Foot", "Nose", "Eye"] },
+            { full: "I wash my Hands", missing: "Hand", display: "I wash my ___s", translation: "אני שוטף את הידיים", options: ["Foot", "Nose", "Eye"] }, // Using singular Hand in DB
             { full: "The Fish swims", missing: "Fish", display: "The ___ swims", translation: "הדג שוחה", options: ["Bird", "Cat", "Lion"] },
             { full: "I sleep in a Bed", missing: "Bed", display: "I sleep in a ___", translation: "אני ישן במיטה", options: ["Chair", "Table", "Box"] },
             { full: "The Cat says Meow", missing: "Cat", display: "The ___ says Meow", translation: "החתול אומר מיאו", options: ["Dog", "Cow", "Pig"] },
@@ -925,68 +947,49 @@
             { full: "The Pizza is yummy", missing: "Pizza", display: "The ___ is yummy", translation: "הפיצה טעימה", options: ["Table", "Chair", "Car"] },
             { full: "I run fast", missing: "Run", display: "I ___ fast", translation: "אני רץ מהר", options: ["Sleep", "Sit", "Stand"] },
 
-            // New Sentences
-            { full: "The Tiger runs fast", missing: "Tiger", display: "The ___ runs fast", translation: "הנמר רץ מהר", options: ["Turtle", "Snail", "Cat"] },
-            { full: "The Wolf howls at the moon", missing: "Wolf", display: "The ___ howls at the moon", translation: "הזאב מיילל לירח", options: ["Dog", "Fox", "Bear"] },
-            { full: "The Fox is clever", missing: "Fox", display: "The ___ is clever", translation: "השועל פיקח", options: ["Rabbit", "Mouse", "Wolf"] },
-            { full: "The Shark has big teeth", missing: "Shark", display: "The ___ has big teeth", translation: "לכריש יש שיניים גדולות", options: ["Fish", "Whale", "Dolphin"] },
-            { full: "The Dolphin jumps high", missing: "Dolphin", display: "The ___ jumps high", translation: "הדולפין קופץ גבוה", options: ["Fish", "Shark", "Whale"] },
-            { full: "The Penguin walks funny", missing: "Penguin", display: "The ___ walks funny", translation: "הפינגווין הולך מצחיק", options: ["Bird", "Duck", "Chicken"] },
-            { full: "The Camel has a hump", missing: "Camel", display: "The ___ has a hump", translation: "לגמל יש דבשת", options: ["Horse", "Donkey", "Cow"] },
-            { full: "The Goat climbs the mountain", missing: "Goat", display: "The ___ climbs the mountain", translation: "העז מטפסת על ההר", options: ["Sheep", "Cow", "Horse"] },
-            { full: "I peel the Banana", missing: "Banana", display: "I peel the ___", translation: "אני מקלף את הבננה", options: ["Apple", "Orange", "Grapes"] },
-            { full: "The Tomato is red", missing: "Tomato", display: "The ___ is red", translation: "העגבניה אדומה", options: ["Cucumber", "Carrot", "Potato"] },
-            { full: "The Carrot is orange", missing: "Carrot", display: "The ___ is orange", translation: "הגזר כתום", options: ["Tomato", "Cucumber", "Onion"] },
-            { full: "I eat Corn on the cob", missing: "Corn", display: "I eat ___ on the cob", translation: "אני אוכל תירס על הקלח", options: ["Peas", "Beans", "Rice"] },
-            { full: "The Onion makes me cry", missing: "Onion", display: "The ___ makes me cry", translation: "הבצל גורם לי לבכות", options: ["Garlic", "Potato", "Tomato"] },
-            { full: "I like Sushi very much", missing: "Sushi", display: "I like ___ very much", translation: "אני אוהב סושי מאוד", options: ["Pizza", "Burger", "Fries"] },
-            { full: "The Window is open", missing: "Window", display: "The ___ is open", translation: "החלון פתוח", options: ["Door", "Wall", "Floor"] },
-            { full: "I brush with Toothbrush", missing: "Toothbrush", display: "I brush with ___", translation: "אני מצחצח עם מברשת שיניים", options: ["Comb", "Brush", "Soap"] },
-            { full: "I use Soap in bath", missing: "Soap", display: "I use ___ in bath", translation: "אני משתמש בסבון באמבטיה", options: ["Shampoo", "Water", "Towel"] },
-            { full: "I watch TV", missing: "Television", display: "I watch ___", translation: "אני צופה בטלוויזיה", options: ["Radio", "Phone", "Computer"] },
-            { full: "The Umbrella keeps me dry", missing: "Umbrella", display: "The ___ keeps me dry", translation: "המטריה שומרת עלי יבש", options: ["Hat", "Coat", "Boots"] },
-            { full: "The Leaf falls from tree", missing: "Leaf", display: "The ___ falls from tree", translation: "העלה נופל מהעץ", options: ["Fruit", "Branch", "Flower"] },
-            { full: "The Cactus has spikes", missing: "Cactus", display: "The ___ has spikes", translation: "לקקטוס יש קוצים", options: ["Flower", "Tree", "Bush"] },
-            { full: "The Earth is round", missing: "Earth", display: "The ___ is round", translation: "כדור הארץ עגול", options: ["Moon", "Sun", "Mars"] },
-            { full: "The Lightning flashes", missing: "Lightning", display: "The ___ flashes", translation: "הברק מבזיק", options: ["Thunder", "Rain", "Wind"] },
-            { full: "The Tornado spins round", missing: "Tornado", display: "The ___ spins round", translation: "הטורנדו מסתובב", options: ["Wind", "Rain", "Storm"] },
-            { full: "The Bus goes to school", missing: "Bus", display: "The ___ goes to school", translation: "האוטובוס נוסע לבית הספר", options: ["Car", "Bike", "Train"] },
-            { full: "I call a Taxi", missing: "Taxi", display: "I call a ___", translation: "אני מזמין מונית", options: ["Bus", "Car", "Uber"] },
-            { full: "The Ambulance goes wee-woo", missing: "Ambulance", display: "The ___ goes wee-woo", translation: "האמבולנס עושה ווי-וו", options: ["Police Car", "Fire Truck", "Car"] },
-            { full: "The Tractor is on farm", missing: "Tractor", display: "The ___ is on farm", translation: "הטרקטור בחווה", options: ["Car", "Truck", "Bike"] },
-            { full: "I ride my Scooter", missing: "Scooter", display: "I ride my ___", translation: "אני רוכב על הקורקינט שלי", options: ["Bike", "Skateboard", "Car"] },
-            { full: "The Rocket goes to space", missing: "Rocket", display: "The ___ goes to space", translation: "הטיל טס לחלל", options: ["Plane", "Helicopter", "Bird"] },
-            { full: "The Anchor stops the ship", missing: "Anchor", display: "The ___ stops the ship", translation: "העוגן עוצר את האונייה", options: ["Sail", "Rope", "Wheel"] },
-            { full: "I stick out my Tongue", missing: "Tongue", display: "I stick out my ___", translation: "אני מוציא את הלשון", options: ["Teeth", "Lips", "Nose"] },
-            { full: "I paint my Nail", missing: "Nail", display: "I paint my ___s", translation: "אני צובעת את הציפורניים", options: ["Finger", "Toe", "Hand"] },
-            { full: "The Bone is white", missing: "Bone", display: "The ___ is white", translation: "העצם לבנה", options: ["Tooth", "Skin", "Blood"] },
-            { full: "I have five Fingers", missing: "Finger", display: "I have five ___s", translation: "יש לי חמש אצבעות", options: ["Toes", "Arms", "Legs"] },
-            { full: "I lift with my Arm", missing: "Arm", display: "I lift with my ___", translation: "אני מרים עם הזרוע שלי", options: ["Leg", "Hand", "Finger"] },
-            { full: "The Gold shines bright", missing: "Gold", display: "The ___ shines bright", translation: "הזהב זוהר", options: ["Silver", "Bronze", "Iron"] },
-            { full: "The Silver is shiny", missing: "Silver", display: "The ___ is shiny", translation: "הכסף מבריק", options: ["Gold", "Copper", "Metal"] },
-            { full: "I wear a Tie to work", missing: "Tie", display: "I wear a ___ to work", translation: "אני עונב עניבה לעבודה", options: ["Scarf", "Belt", "Hat"] },
-            { full: "I carry a Backpack", missing: "Backpack", display: "I carry a ___", translation: "אני סוחב תיק גב", options: ["Purse", "Bag", "Suitcase"] },
-            { full: "The Purse has money", missing: "Purse", display: "The ___ has money", translation: "בתיק יש כסף", options: ["Wallet", "Pocket", "Bag"] },
-            { full: "I put on my Jacket", missing: "Jacket", display: "I put on my ___", translation: "אני לובש את הז'קט שלי", options: ["Coat", "Sweater", "Shirt"] },
-            { full: "The Scarf keeps neck warm", missing: "Scarf", display: "The ___ keeps neck warm", translation: "הצעיף שומר על הצוואר חם", options: ["Hat", "Gloves", "Coat"] },
-            { full: "The Gloves keep hands warm", missing: "Gloves", display: "The ___ keep hands warm", translation: "הכפפות שומרות על הידיים חמות", options: ["Socks", "Shoes", "Hat"] },
-            { full: "I look Cool in sunglasses", missing: "Cool", display: "I look ___ in sunglasses", translation: "אני נראה מגניב במשקפי שמש", options: ["Hot", "Cold", "Funny"] },
-            { full: "I blow a Kiss", missing: "Kiss", display: "I blow a ___", translation: "אני שולח נשיקה", options: ["Hug", "Wave", "Smile"] },
-            { full: "I give a Wink", missing: "Wink", display: "I give a ___", translation: "אני קורץ", options: ["Smile", "Frown", "Laugh"] },
-            { full: "I am Sick in bed", missing: "Sick", display: "I am ___ in bed", translation: "אני חולה במיטה", options: ["Happy", "Sad", "Tired"] },
-            { full: "I am Scared of ghosts", missing: "Scared", display: "I am ___ of ghosts", translation: "אני מפחד מרוחות", options: ["Happy", "Brave", "Sad"] },
-            { full: "I use a Ruler to measure", missing: "Ruler", display: "I use a ___ to measure", translation: "אני משתמש בסרגל למדוד", options: ["Pencil", "Pen", "Eraser"] },
-            { full: "I use a Paperclip", missing: "Paperclip", display: "I use a ___", translation: "אני משתמש במהדק", options: ["Stapler", "Tape", "Glue"] },
-            { full: "I look in Microscope", missing: "Microscope", display: "I look in ___", translation: "אני מסתכל במיקרוסקופ", options: ["Telescope", "Glasses", "Binoculars"] },
-            { full: "The Judge has a hammer", missing: "Judge", display: "The ___ has a hammer", translation: "לשופט יש פטיש", options: ["Lawyer", "Police", "Guard"] },
-            { full: "The Mechanic fixes cars", missing: "Mechanic", display: "The ___ fixes cars", translation: "המכונאי מתקן מכוניות", options: ["Driver", "Pilot", "Engineer"] },
-            { full: "The Scientist does magic", missing: "Scientist", display: "The ___ does magic", translation: "המדען עושה קסמים", options: ["Teacher", "Doctor", "Artist"] },
-            { full: "I play Volleyball on beach", missing: "Volleyball", display: "I play ___ on beach", translation: "אני משחק כדורעף בחוף", options: ["Football", "Soccer", "Tennis"] },
-            { full: "I play Rugby with friends", missing: "Rugby", display: "I play ___ with friends", translation: "אני משחק רוגבי עם חברים", options: ["Football", "Soccer", "Tennis"] },
-            { full: "I go Bowling", missing: "Bowling", display: "I go ___", translation: "אני הולך לבאולינג", options: ["Swimming", "Running", "Skating"] },
-            { full: "I do Karate chop", missing: "Karate", display: "I do ___ chop", translation: "אני עושה מכת קראטה", options: ["Judo", "Boxing", "Kung Fu"] },
-            { full: "I score a Goal", missing: "Goal", display: "I score a ___", translation: "אני מבקיע גול", options: ["Point", "Basket", "Touchdown"] },
-            // + MORE
+            // New 40 Sentences
+            { full: "I like to eat Pizza", missing: "Pizza", display: "I like to eat ___", translation: "אני אוהב לאכול פיצה", options: ["Book", "Car", "Tree"] },
+            { full: "The Moon is white", missing: "Moon", display: "The ___ is white", translation: "הירח לבן", options: ["Sun", "Star", "Cloud"] },
+            { full: "I see a big Ship", missing: "Ship", display: "I see a big ___", translation: "אני רואה אונייה גדולה", options: ["Car", "Bus", "Bike"] },
+            { full: "The Monkey likes bananas", missing: "Monkey", display: "The ___ likes bananas", translation: "הקוף אוהב בננות", options: ["Lion", "Tiger", "Bear"] },
+            { full: "I wear blue Pants", missing: "Pants", display: "I wear blue ___", translation: "אני לובש מכנסיים כחולים", options: ["Shirt", "Hat", "Shoe"] },
+            { full: "The Flower is pretty", missing: "Flower", display: "The ___ is pretty", translation: "הפרח יפה", options: ["Tree", "Grass", "Rock"] },
+            { full: "I read a Book", missing: "Book", display: "I read a ___", translation: "אני קורא ספר", options: ["Pen", "Pencil", "Bag"] },
+            { full: "The Snake is long", missing: "Snake", display: "The ___ is long", translation: "הנחש ארוך", options: ["Ant", "Bee", "Fly"] },
+            { full: "I sit on a Chair", missing: "Chair", display: "I sit on a ___", translation: "אני יושב על כיסא", options: ["Table", "Bed", "Desk"] },
+            { full: "The Lemon is yellow", missing: "Lemon", display: "The ___ is yellow", translation: "הלימון צהוב", options: ["Apple", "Orange", "Grape"] },
+            { full: "I write with a Pen", missing: "Pen", display: "I write with a ___", translation: "אני כותב עם עט", options: ["Book", "Bag", "Ruler"] },
+            { full: "The Fire is hot", missing: "Fire", display: "The ___ is hot", translation: "האש חמה", options: ["Ice", "Water", "Snow"] },
+            { full: "I hear with my Ear", missing: "Ear", display: "I hear with my ___", translation: "אני שומע עם האוזן שלי", options: ["Eye", "Nose", "Mouth"] },
+            { full: "The Rabbit hops", missing: "Rabbit", display: "The ___ hops", translation: "הארנב מקפץ", options: ["Turtle", "Snail", "Snake"] },
+            { full: "I open the Door", missing: "Door", display: "I open the ___", translation: "אני פותח את הדלת", options: ["Window", "Wall", "Floor"] },
+            { full: "The Teacher teaches", missing: "Teacher", display: "The ___ teaches", translation: "המורה מלמד/ת", options: ["Doctor", "Police", "Cook"] },
+            { full: "I smell with my Nose", missing: "Nose", display: "I smell with my ___", translation: "אני מריח עם האף שלי", options: ["Eye", "Ear", "Hand"] },
+            { full: "The Baby cries", missing: "Baby", display: "The ___ cries", translation: "התינוק בוכה", options: ["Man", "Woman", "Boy"] },
+            { full: "I jump high", missing: "Jump", display: "I ___ high", translation: "אני קופץ גבוה", options: ["Run", "Walk", "Sit"] },
+            { full: "The Doctor helps sick people", missing: "Doctor", display: "The ___ helps sick people", translation: "הרופא עוזר לאנשים חולים", options: ["Teacher", "Farmer", "Driver"] },
+            { full: "I wear a Hat on my head", missing: "Hat", display: "I wear a ___ on my head", translation: "אני חובש כובע על הראש", options: ["Shoe", "Sock", "Glove"] },
+            { full: "The Train goes choo choo", missing: "Train", display: "The ___ goes choo choo", translation: "הרכבת עושה טו טו", options: ["Car", "Bus", "Bike"] },
+            { full: "I love my Home", missing: "Home", display: "I love my ___", translation: "אני אוהב את הבית שלי", options: ["School", "Park", "Shop"] },
+            { full: "The Star shines at night", missing: "Star", display: "The ___ shines at night", translation: "הכוכב זוהר בלילה", options: ["Sun", "Cloud", "Rain"] },
+            { full: "I brush my Tooth", missing: "Tooth", display: "I brush my ___", translation: "אני מצחצח את השן שלי", options: ["Hair", "Face", "Hand"] },
+            { full: "The Ice Cream is cold", missing: "Ice Cream", display: "The ___ is cold", translation: "הגלידה קרה", options: ["Soup", "Tea", "Coffee"] },
+            { full: "I play on the Computer", missing: "Computer", display: "I play on the ___", translation: "אני משחק במחשב", options: ["TV", "Radio", "Phone"] },
+            { full: "The Butterfly is colorful", missing: "Butterfly", display: "The ___ is colorful", translation: "הפרפר צבעוני", options: ["Fly", "Ant", "Spider"] },
+            { full: "I drink Water", missing: "Water", display: "I drink ___", translation: "אני שותה מים", options: ["Bread", "Apple", "Meat"] },
+            { full: "The Police helps us", missing: "Police", display: "The ___ helps us", translation: "המשטרה עוזרת לנו", options: ["Thief", "Robber", "Bad"] },
+            { full: "I smile when I am Happy", missing: "Happy", display: "I smile when I am ___", translation: "אני מחייך כשאני שמח", options: ["Sad", "Angry", "Tired"] },
+            { full: "The Clock tells time", missing: "Clock", display: "The ___ tells time", translation: "השעון מראה את הזמן", options: ["Book", "Pen", "Bag"] },
+            { full: "I swim in the pool", missing: "Swim", display: "I ___ in the pool", translation: "אני שוחה בבריכה", options: ["Run", "Jump", "Fly"] },
+            { full: "The Spider has 8 legs", missing: "Spider", display: "The ___ has 8 legs", translation: "לעכביש יש 8 רגליים", options: ["Dog", "Cat", "Bird"] },
+            { full: "I wear Shoes on my feet", missing: "Shoe", display: "I wear ___s on my feet", translation: "אני נעליים על הרגליים", options: ["Hat", "Glove", "Scarf"] },
+            { full: "The King wears a crown", missing: "King", display: "The ___ wears a crown", translation: "המלך חובש כתר", options: ["Boy", "Girl", "Man"] },
+            { full: "I paint a picture", missing: "Paint", display: "I ___ a picture", translation: "אני מצייר תמונה", options: ["Write", "Read", "Sing"] },
+            { full: "The Rain falls down", missing: "Rain", display: "The ___ falls down", translation: "הגשם יורד למטה", options: ["Sun", "Wind", "Snow"] },
+            { full: "I cut with Scissors", missing: "Scissors", display: "I cut with ___", translation: "אני גוזר עם מספריים", options: ["Glue", "Tape", "Pen"] },
+            { full: "The Cow gives milk", missing: "Cow", display: "The ___ gives milk", translation: "הפרה נותנת חלב", options: ["Dog", "Cat", "Lion"] },
+
+            // + MORE (60 more)
             { full: "The Bear likes honey", missing: "Bear", display: "The ___ likes honey", translation: "הדוב אוהב דבש", options: ["Lion", "Tiger", "Wolf"] },
             { full: "The Bee makes honey", missing: "Bee", display: "The ___ makes honey", translation: "הדבורה מכינה דבש", options: ["Fly", "Ant", "Spider"] },
             { full: "The Frog jumps in water", missing: "Frog", display: "The ___ jumps in water", translation: "הצפרדע קופצת למים", options: ["Fish", "Turtle", "Duck"] },
@@ -994,12 +997,16 @@
             { full: "The Owl sleeps in the day", missing: "Owl", display: "The ___ sleeps in the day", translation: "הינשוף ישן ביום", options: ["Bird", "Bat", "Eagle"] },
             { full: "The Sheep has white wool", missing: "Sheep", display: "The ___ has white wool", translation: "לכבשה יש צמר לבן", options: ["Goat", "Cow", "Horse"] },
             { full: "The Camel lives in desert", missing: "Camel", display: "The ___ lives in desert", translation: "הגמל חי במדבר", options: ["Horse", "Lion", "Tiger"] },
+            { full: "The Lemon is sour", missing: "Lemon", display: "The ___ is sour", translation: "הלימון חמוץ", options: ["Apple", "Banana", "Orange"] },
             { full: "I bake a Cake", missing: "Cake", display: "I bake a ___", translation: "אני אופה עוגה", options: ["Bread", "Pizza", "Pie"] },
             { full: "The Cookie is sweet", missing: "Cookie", display: "The ___ is sweet", translation: "העוגייה מתוקה", options: ["Bread", "Meat", "Egg"] },
+            { full: "I eat a Hamburger", missing: "Hamburger", display: "I eat a ___", translation: "אני אוכל המבורגר", options: ["Pizza", "Hot Dog", "Sandwich"] },
             { full: "The Popcorn goes pop", missing: "Popcorn", display: "The ___ goes pop", translation: "הפופקורן עושה פופ", options: ["Corn", "Candy", "Chip"] },
             { full: "I love Chocolate", missing: "Chocolate", display: "I love ___", translation: "אני אוהב שוקולד", options: ["Candy", "Cake", "Ice Cream"] },
             { full: "The Strawberry is red", missing: "Strawberry", display: "The ___ is red", translation: "התות אדום", options: ["Apple", "Cherry", "Tomato"] },
             { full: "I cook Rice", missing: "Rice", display: "I cook ___", translation: "אני מבשל אורז", options: ["Pasta", "Meat", "Soup"] },
+            { full: "I watch Television", missing: "Television", display: "I watch ___", translation: "אני צופה בטלוויזיה", options: ["Radio", "Computer", "Phone"] },
+            { full: "I take photo with Camera", missing: "Camera", display: "I take photo with ___", translation: "אני מצלם עם מצלמה", options: ["Phone", "Eyes", "Box"] },
             { full: "I play the Guitar", missing: "Guitar", display: "I play the ___", translation: "אני מנגן בגיטרה", options: ["Piano", "Drum", "Violin"] },
             { full: "The Candle gives light", missing: "Candle", display: "The ___ gives light", translation: "הנר נותן אור", options: ["Lamp", "Sun", "Fire"] },
             { full: "I lock door with Key", missing: "Key", display: "I lock door with ___", translation: "אני נועל דלת עם מפתח", options: ["Lock", "Hand", "Pen"] },
@@ -1037,6 +1044,7 @@
             { full: "I Drive a car", missing: "Drive", display: "I ___ a car", translation: "אני נוהג במכונית", options: ["Ride", "Walk", "Run"] },
             { full: "The Toilet is clean", missing: "Toilet", display: "The ___ is clean", translation: "השירותים נקיים", options: ["Bath", "Sink", "Room"] },
             { full: "I take a Shower", missing: "Shower", display: "I take a ___", translation: "אני מתקלח", options: ["Bath", "Swim", "Wash"] },
+            { full: "I use Soap to wash", missing: "Soap", display: "I use ___ to wash", translation: "אני משתמש בסבון לרחוץ", options: ["Water", "Towel", "Brush"] },
             { full: "The Battery is full", missing: "Battery", display: "The ___ is full", translation: "הסוללה מלאה", options: ["Box", "Cup", "Bag"] },
             { full: "I give a Gift", missing: "Gift", display: "I give a ___", translation: "אני נותן מתנה", options: ["Box", "Toy", "Card"] },
             { full: "The Balloon goes up", missing: "Balloon", display: "The ___ goes up", translation: "הבלון עולה למעלה", options: ["Ball", "Bird", "Plane"] },
