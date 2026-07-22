@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>מסע ההרפתקאות באנגלית - למעין</title>
+    <!-- canvas-confetti library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Font 'Rubik' and 'Comic Neue' -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF6B6B;
+            --secondary-color: #4ECDC4;
+            --accent-color: #FFE66D;
+            --text-color: #2D3436;
+            --success-color: #2ECC71;
+            --error-color: #FF5252;
+            --sky-blue: #a0e0ff;
+            --grass-green: #7bed9f;
+            --trail-color: #f1f2f6;
+            --char-color: #ff4757;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Rubik', 'Comic Neue', Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #a0e0ff 0%, #7bed9f 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            color: var(--text-color);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Main Game container */
+        .game-container {
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            max-height: 800px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            border: 4px solid white;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Top Header Area */
+        .game-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 3px solid #e0e0e0;
+            border-top-left-radius: 26px;
+            border-top-right-radius: 26px;
+            z-index: 10;
+        }
+
+        .header-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #2f3542;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .stat-item {
+            background: #ffffff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 2px solid #f1f2f6;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .coin-icon {
+            font-size: 1.3rem;
+            animation: rotateCoin 2s infinite linear;
+        }
+
+        @keyframes rotateCoin {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(180deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        /* Top Prompt Area */
+        .challenge-box {
+            background: white;
+            padding: 20px;
+            margin: 15px 20px 5px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border: 3px solid var(--secondary-color);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .challenge-text {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            direction: ltr;
+            unicode-bidi: isolate;
+        }
+
+        .challenge-translation {
+            font-size: 1.2rem;
+            color: #747d8c;
+            font-weight: 500;
+            min-height: 24px;
+        }
+
+        .replay-sound-btn {
+            background: var(--accent-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            transition: all 0.1s;
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .replay-sound-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        /* Adventure Track (Middle Section) */
+        .adventure-track {
+            flex-grow: 1;
+            position: relative;
+            background: linear-gradient(to bottom, #74b9ff 0%, #81ecec 100%);
+            margin: 10px 20px;
+            border-radius: 25px;
+            border: 3px solid #dfe4ea;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end; /* Character sits near bottom */
+            justify-content: center;
+        }
+
+        /* Scrolling Trail Effect */
+        .scrolling-trail {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 100%;
+            background: #dfe4ea;
+            border-left: 6px dashed #747d8c;
+            border-right: 6px dashed #747d8c;
+            z-index: 1;
+        }
+
+        .scrolling-trail::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 100%;
+            background: repeating-linear-gradient(to bottom, #fff, #fff 30px, transparent 30px, transparent 60px);
+            animation: scrollLines 2s linear infinite;
+            animation-play-state: paused;
+        }
+
+        .scrolling-trail.scrolling::before {
+            animation-play-state: running;
+        }
+
+        @keyframes scrollLines {
+            0% { transform: translate(-50%, 0); }
+            100% { transform: translate(-50%, 60px); }
+        }
+
+        /* Decorative Trees on Sides */
+        .decor-tree {
+            position: absolute;
+            font-size: 2.5rem;
+            z-index: 2;
+            transition: transform 1.5s ease-in-out, opacity 1s;
+        }
+
+        /* Character Avatar */
+        .character-wrapper {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 90px;
+            transition: left 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .character-shadow {
+            width: 70px;
+            height: 12px;
+            background: rgba(0,0,0,0.15);
+            border-radius: 50%;
+            position: absolute;
+            bottom: -5px;
+        }
+
+        .character-body {
+            width: 75px;
+            height: 75px;
+            background-color: var(--char-color);
+            border-radius: 50% 50% 45% 45%;
+            position: relative;
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.2), 0 5px 15px rgba(0,0,0,0.1);
+            animation: characterIdle 1.5s infinite ease-in-out;
+            transform-origin: bottom center;
+            border: 3px solid #2f3542;
+        }
+
+        @keyframes characterIdle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05, 0.95) translateY(3px); }
+        }
+
+        /* Character Eyes */
+        .character-eyes {
+            display: flex;
+            justify-content: space-between;
+            width: 45px;
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .character-eye {
+            width: 15px;
+            height: 15px;
+            background: white;
+            border-radius: 50%;
+            position: relative;
+            border: 2px solid #2f3542;
+        }
+
+        .character-pupil {
+            width: 6px;
+            height: 6px;
+            background: #2f3542;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            animation: pupilLook 4s infinite alternate;
+        }
+
+        @keyframes pupilLook {
+            0%, 20% { transform: translate(0, 0); }
+            40%, 60% { transform: translate(2px, 0); }
+            80%, 100% { transform: translate(-2px, 0); }
+        }
+
+        /* Character Smile */
+        .character-smile {
+            width: 18px;
+            height: 9px;
+            border-bottom: 3px solid #2f3542;
+            border-radius: 0 0 10px 10px;
+            position: absolute;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Character Cosmetics Accessories Container */
+        .accessory-slot {
+            position: absolute;
+            pointer-events: none;
+            display: none;
+        }
+
+        .accessory-slot.active {
+            display: block;
+        }
+
+        /* Accessories Styles */
+        .char-hat {
+            font-size: 2.2rem;
+            position: absolute;
+            top: -26px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 6;
+        }
+
+        .char-sunglasses {
+            font-size: 1.5rem;
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 6;
+            width: 50px;
+            text-align: center;
+        }
+
+        .char-crown {
+            font-size: 2rem;
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-5deg);
+            z-index: 6;
+        }
+
+        /* Option Side Targets */
+        .option-target {
+            position: absolute;
+            bottom: 40px;
+            width: 150px;
+            height: 130px;
+            background: white;
+            border-radius: 20px;
+            border: 4px solid var(--secondary-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            cursor: pointer;
+            z-index: 4;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .option-target:active {
+            transform: scale(0.95);
+        }
+
+        .option-target.left {
+            left: 20px;
+        }
+
+        .option-target.right {
+            right: 20px;
+        }
+
+        .option-target.correct-highlight {
+            background-color: #d4edda;
+            border-color: var(--success-color);
+            animation: pulseGreen 0.5s infinite alternate;
+        }
+
+        @keyframes pulseGreen {
+            from { box-shadow: 0 0 10px rgba(46, 204, 113, 0.4); }
+            to { box-shadow: 0 0 25px rgba(46, 204, 113, 0.8); }
+        }
+
+        .option-emoji {
+            font-size: 3.2rem;
+            margin-bottom: 5px;
+        }
+
+        .option-label {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        /* Mobile Controls */
+        .mobile-controls {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 3px solid #e0e0e0;
+            border-bottom-left-radius: 26px;
+            border-bottom-right-radius: 26px;
+            z-index: 10;
+        }
+
+        .nav-btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.1s;
+        }
+
+        .nav-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .nav-btn.shop-btn {
+            background: var(--accent-color);
+            color: var(--text-color);
+        }
+
+        .control-arrows {
+            display: flex;
+            gap: 15px;
+        }
+
+        .arrow-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.1s;
+        }
+
+        .arrow-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        /* Shop Modal Overlay */
+        .shop-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .shop-modal.show {
+            display: flex;
+        }
+
+        .shop-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 30px;
+            padding: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            border: 4px solid var(--accent-color);
+            text-align: center;
+            position: relative;
+            animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .shop-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .shop-subtitle {
+            font-size: 1.1rem;
+            color: #747d8c;
+            margin-bottom: 20px;
+        }
+
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .shop-item {
+            background: #f8f9fa;
+            border: 3px solid #f1f2f6;
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .shop-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--secondary-color);
+        }
+
+        .shop-item.purchased {
+            border-color: var(--success-color);
+            background-color: #f1fcf4;
+        }
+
+        .shop-item.equipped {
+            border-color: var(--primary-color);
+            background-color: #fff2f2;
+        }
+
+        .shop-item-icon {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+
+        .shop-item-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+
+        .shop-item-price {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #ffa502;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .equipped-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--primary-color);
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .shop-item.equipped .equipped-badge {
+            display: block;
+        }
+
+        .purchased-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--success-color);
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .shop-item.purchased:not(.equipped) .purchased-badge {
+            display: block;
+        }
+
+        .continue-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 15px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            width: 100%;
+        }
+
+        .continue-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        /* Big feedback overlay */
+        .feedback-overlay {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--success-color);
+            z-index: 80;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+            opacity: 0;
+            text-align: center;
+        }
+
+        .feedback-overlay.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .feedback-overlay.wrong {
+            color: var(--error-color);
+        }
+
+        /* Back to menu button styling */
+        .back-menu-btn {
+            background: #747d8c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            transition: all 0.1s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-menu-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        /* Responsiveness adjustments */
+        @media (max-width: 600px) {
+            .game-container {
+                height: 100vh;
+                max-height: 100%;
+                border-radius: 0;
+                border: none;
+            }
+            .game-header {
+                border-radius: 0;
+                padding: 10px;
+            }
+            .mobile-controls {
+                border-radius: 0;
+                padding: 10px;
+            }
+            .challenge-text {
+                font-size: 1.6rem;
+            }
+            .option-target {
+                width: 110px;
+                height: 110px;
+                bottom: 20px;
+            }
+            .option-emoji {
+                font-size: 2.5rem;
+            }
+            .option-label {
+                font-size: 1.1rem;
+            }
+            .character-wrapper {
+                width: 75px;
+                height: 75px;
+                bottom: 20px;
+            }
+            .character-body {
+                width: 65px;
+                height: 65px;
+            }
+            .character-eyes {
+                width: 38px;
+                top: 20px;
+            }
+            .character-eye {
+                width: 12px;
+                height: 12px;
+            }
+            .char-hat {
+                font-size: 1.8rem;
+                top: -22px;
+            }
+            .char-sunglasses {
+                font-size: 1.2rem;
+                top: 14px;
+            }
+            .char-crown {
+                font-size: 1.6rem;
+                top: -18px;
+            }
+            .shop-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- Top Header with Coin Stat, Title, Back btn -->
+        <header class="game-header">
+            <div class="header-title">
+                <span>🎒</span>
+                <span>מסע ההרפתקאות</span>
+            </div>
+            <div class="stat-group">
+                <a href="index.html" class="back-menu-btn">🏠 תפריט</a>
+                <div class="stat-item">
+                    <span class="coin-icon">💎</span>
+                    <span id="coin-counter">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Big feedback overlay -->
+        <div class="feedback-overlay" id="feedback-overlay">מעולה! 🎉</div>
+
+        <!-- Challenge prompt card -->
+        <div class="challenge-box">
+            <div class="challenge-text" id="challenge-prompt">I like to eat an ___</div>
+            <div class="challenge-translation" id="challenge-translation">אני אוהב לאכול...</div>
+            <button class="replay-sound-btn" onclick="speakChallenge(true)">🔊 השמע שוב</button>
+        </div>
+
+        <!-- Adventure Track (Canvas-like middle road) -->
+        <div class="adventure-track" id="adventure-track">
+            <!-- Central Road lines -->
+            <div class="scrolling-trail" id="trail"></div>
+
+            <!-- Decorative Trees/Objects spawning dynamically -->
+            <div class="decor-tree" style="top: 15%; right: 5%;" id="tree1">🌲</div>
+            <div class="decor-tree" style="top: 45%; left: 5%;" id="tree2">🌳</div>
+            <div class="decor-tree" style="top: 70%; right: 4%;" id="tree3">🌲</div>
+            <div class="decor-tree" style="top: 25%; left: 8%;" id="tree4">🌸</div>
+
+            <!-- Left Target Choice A -->
+            <div class="option-target left" id="option-left" onclick="moveCharacter('left')">
+                <div class="option-emoji" id="left-emoji">🍎</div>
+                <div class="option-label" id="left-label">Apple</div>
+            </div>
+
+            <!-- Right Target Choice B -->
+            <div class="option-target right" id="option-right" onclick="moveCharacter('right')">
+                <div class="option-emoji" id="right-emoji">🛏️</div>
+                <div class="option-label" id="right-label">Bed</div>
+            </div>
+
+            <!-- Cute Playable Avatar Character -->
+            <div class="character-wrapper" id="character">
+                <div class="character-shadow"></div>
+                <div class="character-body" id="char-body">
+                    <div class="character-eyes">
+                        <div class="character-eye">
+                            <div class="character-pupil"></div>
+                        </div>
+                        <div class="character-eye">
+                            <div class="character-pupil"></div>
+                        </div>
+                    </div>
+                    <div class="character-smile"></div>
+
+                    <!-- Cosmetic accessories slots -->
+                    <div class="accessory-slot char-hat" id="slot-hat">🤠</div>
+                    <div class="accessory-slot char-sunglasses" id="slot-sunglasses">🕶️</div>
+                    <div class="accessory-slot char-crown" id="slot-crown">👑</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation & Mobile Touch Controls -->
+        <footer class="mobile-controls">
+            <button class="nav-btn shop-btn" onclick="openShop()">🏪 חנות בגדים</button>
+            <div class="control-arrows">
+                <button class="arrow-btn" onclick="moveCharacter('left')">◀️</button>
+                <button class="arrow-btn" onclick="moveCharacter('right')">▶️</button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- The Shop Modal Overlay -->
+    <div class="shop-modal" id="shop-modal">
+        <div class="shop-content">
+            <h2 class="shop-title">🏪 חנות האביזרים!</h2>
+            <p class="shop-subtitle">קנה בגדים מגניבים ואביזרים לדמות שלך עם היהלומים שהרווחת!</p>
+            <div class="shop-grid" id="shop-grid">
+                <!-- Dynamically populated shop items -->
+            </div>
+            <button class="continue-btn" onclick="closeShop()">המשך במסע 🚀</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Web Audio Synthesizer ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playTone(freq, type, duration, gainValue = 0.1) {
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(gainValue, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log("Audio play blocked/failed: ", e);
+            }
+        }
+
+        function playSuccessSound() {
+            playTone(523.25, 'sine', 0.15, 0.25); // C5
+            setTimeout(() => playTone(659.25, 'sine', 0.15, 0.25), 100); // E5
+            setTimeout(() => playTone(783.99, 'sine', 0.25, 0.25), 200); // G5
+        }
+
+        function playErrorSound() {
+            playTone(180, 'sawtooth', 0.2, 0.2);
+            setTimeout(() => playTone(120, 'sawtooth', 0.3, 0.2), 150);
+        }
+
+        function playBuySound() {
+            playTone(587.33, 'triangle', 0.1, 0.2); // D5
+            setTimeout(() => playTone(880.00, 'sine', 0.2, 0.2), 100); // A5
+        }
+
+        // --- Challenge Database ---
+        const challenges = [
+            {
+                prompt: "I like to eat an ___",
+                translation: "אני אוהב לאכול תפוח",
+                soundText: "I like to eat an apple",
+                options: {
+                    left: { word: "Apple", emoji: "🍎" },
+                    right: { word: "Bed", emoji: "🛏️" }
+                },
+                correctSide: "left"
+            },
+            {
+                prompt: "The ___ is barking",
+                translation: "הכלב נובח",
+                soundText: "The dog is barking",
+                options: {
+                    left: { word: "Cat", emoji: "🐈" },
+                    right: { word: "Dog", emoji: "🐕" }
+                },
+                correctSide: "right"
+            },
+            {
+                prompt: "The Sky is ___",
+                translation: "השמיים כחולים",
+                soundText: "The Sky is blue",
+                options: {
+                    left: { word: "Blue", emoji: "🔵" },
+                    right: { word: "Red", emoji: "🔴" }
+                },
+                correctSide: "left"
+            },
+            {
+                prompt: "The ___ is shining",
+                translation: "השמש זורחת",
+                soundText: "The sun is shining",
+                options: {
+                    left: { word: "Moon", emoji: "🌙" },
+                    right: { word: "Sun", emoji: "☀️" }
+                },
+                correctSide: "right"
+            },
+            {
+                prompt: "I sleep in a ___",
+                translation: "אני ישן במיטה",
+                soundText: "I sleep in a bed",
+                options: {
+                    left: { word: "Bed", emoji: "🛏️" },
+                    right: { word: "Chair", emoji: "🪑" }
+                },
+                correctSide: "left"
+            },
+            {
+                prompt: "The ___ gives milk",
+                translation: "הפרה נותנת חלב",
+                soundText: "The cow gives milk",
+                options: {
+                    left: { word: "Lion", emoji: "🦁" },
+                    right: { word: "Cow", emoji: "🐄" }
+                },
+                correctSide: "right"
+            },
+            {
+                prompt: "I ride my ___ to school",
+                translation: "אני רוכב על אופניים לבית ספר",
+                soundText: "I ride my bike to school",
+                options: {
+                    left: { word: "Bike", emoji: "🚲" },
+                    right: { word: "Car", emoji: "🚗" }
+                },
+                correctSide: "left"
+            },
+            {
+                prompt: "Which is 🐰 Rabbit?",
+                translation: "איזה מהם הוא ארנב?",
+                soundText: "Rabbit",
+                options: {
+                    left: { word: "Bird", emoji: "🐦" },
+                    right: { word: "Rabbit", emoji: "🐰" }
+                },
+                correctSide: "right"
+            },
+            {
+                prompt: "The ___ is yellow",
+                translation: "הבננה צהובה",
+                soundText: "The banana is yellow",
+                options: {
+                    left: { word: "Banana", emoji: "🍌" },
+                    right: { word: "Apple", emoji: "🍎" }
+                },
+                correctSide: "left"
+            },
+            {
+                prompt: "I read an English ___",
+                translation: "אני קורא ספר באנגלית",
+                soundText: "I read an English book",
+                options: {
+                    left: { word: "Pen", emoji: "🖊️" },
+                    right: { word: "Book", emoji: "📚" }
+                },
+                correctSide: "right"
+            }
+        ];
+
+        // --- Shop Items ---
+        const shopItems = [
+            { id: "hat_cowboy", name: "כובע קאובוי", type: "hat", value: "🤠", price: 10, purchased: false },
+            { id: "hat_chef", name: "כובע טבחים", type: "hat", value: "👨‍🍳", price: 20, purchased: false },
+            { id: "sunglasses_cool", name: "משקפי שמש", type: "sunglasses", value: "🕶️", price: 15, purchased: false },
+            { id: "crown_gold", name: "כתר מלכותי", type: "crown", value: "👑", price: 30, purchased: false },
+            { id: "color_blue", name: "צבע כחול", type: "color", value: "#3498db", price: 5, purchased: false },
+            { id: "color_purple", name: "צבע סגול", type: "color", value: "#9b59b6", price: 5, purchased: false },
+            { id: "color_green", name: "צבע ירוק", type: "color", value: "#2ecc71", price: 5, purchased: false }
+        ];
+
+        // --- Game State Variables ---
+        let currentChallengeIndex = 0;
+        let coins = 0;
+        let characterPosition = "center"; // "left", "center", "right"
+        let isTransitioning = false;
+        let firstShopTriggerDone = false;
+
+        // Equiped items state
+        const equipped = {
+            hat: null,
+            sunglasses: null,
+            crown: null,
+            color: null
+        };
+
+        // --- Initialize Game ---
+        window.addEventListener('load', () => {
+            loadChallenge();
+            renderShop();
+            setupKeyboardControls();
+
+            // Warm up TTS engine
+            try {
+                window.speechSynthesis.cancel();
+            } catch (e) {}
+        });
+
+        // --- Keyboard Controls ---
+        function setupKeyboardControls() {
+            document.addEventListener('keydown', (e) => {
+                if (isTransitioning) return;
+
+                // If shop modal is open, ignore game controls
+                if (document.getElementById('shop-modal').classList.contains('show')) return;
+
+                if (e.key === "ArrowLeft") {
+                    moveCharacter("left");
+                } else if (e.key === "ArrowRight") {
+                    moveCharacter("right");
+                }
+            });
+        }
+
+        // --- Move Character & Collision ---
+        function moveCharacter(side) {
+            if (isTransitioning) return;
+            isTransitioning = true;
+
+            const charElement = document.getElementById("character");
+            characterPosition = side;
+
+            if (side === "left") {
+                charElement.style.left = "25%";
+            } else if (side === "right") {
+                charElement.style.left = "75%";
+            }
+
+            // Check collision after movement finishes (0.5s CSS transition)
+            setTimeout(() => {
+                checkChoice(side);
+            }, 500);
+        }
+
+        // --- Reset Character Position ---
+        function resetCharacter() {
+            const charElement = document.getElementById("character");
+            charElement.style.left = "50%";
+            characterPosition = "center";
+            isTransitioning = false;
+        }
+
+        // --- Play Text to Speech ---
+        function speakChallenge(force = false) {
+            const current = challenges[currentChallengeIndex];
+            const textToSpeak = current.soundText;
+
+            try {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {
+                console.log("TTS Error: ", e);
+            }
+        }
+
+        // --- Load Current Challenge ---
+        function loadChallenge() {
+            const current = challenges[currentChallengeIndex];
+
+            // Set text & options
+            document.getElementById("challenge-prompt").textContent = current.prompt;
+            document.getElementById("challenge-translation").textContent = current.translation;
+
+            document.getElementById("left-emoji").textContent = current.options.left.emoji;
+            document.getElementById("left-label").textContent = current.options.left.word;
+
+            document.getElementById("right-emoji").textContent = current.options.right.emoji;
+            document.getElementById("right-label").textContent = current.options.right.word;
+
+            // Speak word aloud automatically
+            setTimeout(() => {
+                speakChallenge();
+            }, 300);
+        }
+
+        // --- Check Choice Correctness ---
+        function checkChoice(chosenSide) {
+            const current = challenges[currentChallengeIndex];
+            const correctSide = current.correctSide;
+
+            const feedbackElement = document.getElementById("feedback-overlay");
+
+            if (chosenSide === correctSide) {
+                // Correct!
+                playSuccessSound();
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+
+                // Highlight target side
+                const targetEl = document.getElementById(`option-${chosenSide}`);
+                targetEl.classList.add("correct-highlight");
+
+                // Score Coins
+                coins += 5;
+                document.getElementById("coin-counter").textContent = coins;
+
+                // Show Feedback
+                feedbackElement.textContent = "מצוין! 🎉";
+                feedbackElement.classList.remove("wrong");
+                feedbackElement.classList.add("show");
+
+                // Scroll the trail (Trees move, line dashes animate)
+                const trail = document.getElementById("trail");
+                trail.classList.add("scrolling");
+                moveTrees();
+
+                // Check for shop trigger on reaching 10 points
+                let triggerShop = false;
+                if (coins >= 10 && !firstShopTriggerDone) {
+                    firstShopTriggerDone = true;
+                    triggerShop = true;
+                }
+
+                // Wait 1.8s for animations, then load next
+                setTimeout(() => {
+                    targetEl.classList.remove("correct-highlight");
+                    feedbackElement.classList.remove("show");
+                    trail.classList.remove("scrolling");
+
+                    // Increment and loop index
+                    currentChallengeIndex = (currentChallengeIndex + 1) % challenges.length;
+
+                    // Return character to center
+                    resetCharacter();
+                    loadChallenge();
+
+                    // Open shop if triggered
+                    if (triggerShop) {
+                        openShop();
+                    }
+                }, 1800);
+
+            } else {
+                // Incorrect
+                playErrorSound();
+
+                // Show gentle Try Again feedback
+                feedbackElement.textContent = "נסה שוב! 🤔";
+                feedbackElement.classList.add("wrong", "show");
+
+                // Bounce character back to center gently
+                setTimeout(() => {
+                    feedbackElement.classList.remove("show");
+                    resetCharacter();
+                }, 1000);
+            }
+        }
+
+        // --- Tree moving animation effect ---
+        function moveTrees() {
+            const treeIds = ["tree1", "tree2", "tree3", "tree4"];
+            treeIds.forEach(id => {
+                const el = document.getElementById(id);
+                el.style.transform = "translateY(150px) scale(0.5)";
+                el.style.opacity = "0";
+
+                // Re-position back to top with full opacity after animation ends
+                setTimeout(() => {
+                    el.style.transition = "none";
+                    el.style.transform = "translateY(-150px) scale(0.5)";
+
+                    setTimeout(() => {
+                        el.style.transition = "transform 1.5s ease-in-out, opacity 1s";
+                        el.style.transform = "translateY(0) scale(1)";
+                        el.style.opacity = "1";
+                    }, 50);
+                }, 1500);
+            });
+        }
+
+        // --- Shop Functions ---
+        function openShop() {
+            document.getElementById("shop-modal").classList.add("show");
+        }
+
+        function closeShop() {
+            document.getElementById("shop-modal").classList.remove("show");
+        }
+
+        function renderShop() {
+            const grid = document.getElementById("shop-grid");
+            grid.innerHTML = "";
+
+            shopItems.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "shop-item";
+                if (item.purchased) div.classList.add("purchased");
+                if (equipped[item.type] === item) div.classList.add("equipped");
+
+                div.innerHTML = `
+                    <div class="shop-item-icon">${item.value}</div>
+                    <div class="shop-item-name">${item.name}</div>
+                    <div class="shop-item-price">💎 ${item.price}</div>
+                    <div class="equipped-badge">פעיל</div>
+                    <div class="purchased-badge">ברשותך</div>
+                `;
+
+                div.onclick = () => buyOrEquip(item);
+                grid.appendChild(div);
+            });
+        }
+
+        function buyOrEquip(item) {
+            if (item.purchased) {
+                // Toggle equipped state
+                if (equipped[item.type] === item) {
+                    // Unequip
+                    equipped[item.type] = null;
+                } else {
+                    // Equip
+                    equipped[item.type] = item;
+                }
+                updateCharacterCosmetics();
+                playBuySound();
+                renderShop();
+            } else {
+                // Try to buy
+                if (coins >= item.price) {
+                    coins -= item.price;
+                    item.purchased = true;
+                    equipped[item.type] = item; // Auto-equip on purchase
+                    document.getElementById("coin-counter").textContent = coins;
+                    updateCharacterCosmetics();
+                    playBuySound();
+                    renderShop();
+                } else {
+                    // Not enough coins
+                    playErrorSound();
+                    alert("אין לך מספיק יהלומים! המשך לפתור משפטים כדי להרוויח עוד. 💎");
+                }
+            }
+        }
+
+        function updateCharacterCosmetics() {
+            // Update slots
+            const slots = {
+                hat: document.getElementById("slot-hat"),
+                sunglasses: document.getElementById("slot-sunglasses"),
+                crown: document.getElementById("slot-crown")
+            };
+
+            // Reset slots
+            for (const key in slots) {
+                slots[key].classList.remove("active");
+                slots[key].textContent = "";
+            }
+
+            // Apply equipped items
+            if (equipped.hat) {
+                slots.hat.textContent = equipped.hat.value;
+                slots.hat.classList.add("active");
+            }
+            if (equipped.sunglasses) {
+                slots.sunglasses.textContent = equipped.sunglasses.value;
+                slots.sunglasses.classList.add("active");
+            }
+            if (equipped.crown) {
+                slots.crown.textContent = equipped.crown.value;
+                slots.crown.classList.add("active");
+            }
+
+            // Update color
+            const bodyEl = document.getElementById("char-body");
+            if (equipped.color) {
+                bodyEl.style.backgroundColor = equipped.color.value;
+            } else {
+                bodyEl.style.backgroundColor = ""; // Default Red
+            }
+        }
+    </script>
+</body>
+</html>
