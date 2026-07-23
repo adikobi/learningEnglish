@@ -511,6 +511,7 @@
                         <option value="words" selected>אוצר מילים</option>
                         <option value="listening">👂 שמיעה (חדש!)</option>
                         <option value="sentences">השלמת משפטים (מתקדם)</option>
+                        <option value="adventure">🎒 מסע הרפתקאות (חדש!)</option>
                     </select>
 
                     <!-- Vocab Level Selector (Default: Basic) -->
@@ -1444,6 +1445,11 @@
 
         // Handle Mode Change Specifically
         document.getElementById('game-mode-select').addEventListener('change', function() {
+            if (this.value === 'adventure') {
+                // Redirect to the new adventure mode page
+                window.location.href = 'adventure.html';
+                return;
+            }
             gameMode = this.value;
             handleSettingsChange();
         });
