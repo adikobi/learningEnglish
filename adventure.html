@@ -143,6 +143,7 @@
             <h1 id="prompt-text" class="text-2xl md:text-4xl font-bold text-slate-800 my-2 leading-relaxed tracking-wide" dir="ltr">
                 I like to eat an <span class="inline-block border-b-4 border-indigo-500 text-indigo-600 px-3 min-w-[80px]">___</span>
             </h1>
+            <div id="prompt-translation" class="text-xl md:text-2xl font-extrabold text-emerald-600 my-2 transition-all duration-300 opacity-0 max-h-0 overflow-hidden" dir="rtl"></div>
             <p id="prompt-hint" class="text-sm md:text-base text-slate-500 font-medium mt-1">
                 זוז ימינה או שמאלה כדי לבחור בתשובה הנכונה!
             </p>
@@ -481,210 +482,240 @@
                 spokenPrompt: "I like to eat an... blank!",
                 correct: "right",
                 right: { text: "Apple", emoji: "🍎" },
-                left: { text: "Bed", emoji: "🛏️" }
+                left: { text: "Bed", emoji: "🛏️" },
+                translation: "אני אוהב לאכול תפוח"
             },
             {
                 prompt: "The ___ shines bright in the sky.",
                 spokenPrompt: "The... blank... shines bright in the sky.",
                 correct: "left",
                 left: { text: "Sun", emoji: "☀️" },
-                right: { text: "Fish", emoji: "🐟" }
+                right: { text: "Fish", emoji: "🐟" },
+                translation: "השמש זורחת חזק בשמיים"
             },
             {
                 prompt: "A friendly ___ says woof!",
                 spokenPrompt: "A friendly... blank... says woof!",
                 correct: "right",
                 right: { text: "Dog", emoji: "🐶" },
-                left: { text: "Cat", emoji: "🐱" }
+                left: { text: "Cat", emoji: "🐱" },
+                translation: "כלב ידידותי אומר ווף!"
             },
             {
                 prompt: "A fluffy ___ says meow!",
                 spokenPrompt: "A fluffy... blank... says meow!",
                 correct: "left",
                 left: { text: "Cat", emoji: "🐱" },
-                right: { text: "Duck", emoji: "🦆" }
+                right: { text: "Duck", emoji: "🦆" },
+                translation: "חתול פרוותי אומר מיאו!"
             },
             {
                 prompt: "A fast ___ flies up into space.",
                 spokenPrompt: "A fast... blank... flies up into space.",
                 correct: "right",
                 right: { text: "Rocket", emoji: "🚀" },
-                left: { text: "Pizza", emoji: "🍕" }
+                left: { text: "Pizza", emoji: "🍕" },
+                translation: "חללית מהירה טסה למעלה לחלל"
             },
             {
                 prompt: "We wear ___ on our feet.",
                 spokenPrompt: "We wear... blank... on our feet.",
                 correct: "left",
                 left: { text: "Shoes", emoji: "👟" },
-                right: { text: "Hat", emoji: "🎩" }
+                right: { text: "Hat", emoji: "🎩" },
+                translation: "אנחנו נועלים נעליים על הרגליים"
             },
             {
                 prompt: "When it rains, open an ___",
                 spokenPrompt: "When it rains, open an... blank!",
                 correct: "right",
                 right: { text: "Umbrella", emoji: "☔" },
-                left: { text: "Ice Cream", emoji: "🍦" }
+                left: { text: "Ice Cream", emoji: "🍦" },
+                translation: "כשיורד גשם, פתח מטרייה"
             },
             {
                 prompt: "A green ___ likes to hop.",
                 spokenPrompt: "A green... blank... likes to hop.",
                 correct: "left",
                 left: { text: "Frog", emoji: "🐸" },
-                right: { text: "Car", emoji: "🚗" }
+                right: { text: "Car", emoji: "🚗" },
+                translation: "צפרדע ירוקה אוהבת לקפוץ"
             },
             {
                 prompt: "An ___ is a very big animal.",
                 spokenPrompt: "An... blank... is a very big animal.",
                 correct: "right",
                 right: { text: "Elephant", emoji: "🐘" },
-                left: { text: "Mouse", emoji: "🐭" }
+                left: { text: "Mouse", emoji: "🐭" },
+                translation: "פיל הוא חיה גדולה מאוד"
             },
             {
                 prompt: "A fish swims in the ___",
                 spokenPrompt: "A fish swims in the... blank!",
                 correct: "left",
                 left: { text: "Water", emoji: "🌊" },
-                right: { text: "Tree", emoji: "🌳" }
+                right: { text: "Tree", emoji: "🌳" },
+                translation: "דג שוחה במים"
             },
             {
                 prompt: "A monkey loves to eat a ___",
                 spokenPrompt: "A monkey loves to eat a... blank!",
                 correct: "right",
                 right: { text: "Banana", emoji: "🍌" },
-                left: { text: "Sock", emoji: "🧦" }
+                left: { text: "Sock", emoji: "🧦" },
+                translation: "קוף אוהב לאכול בננה"
             },
             {
                 prompt: "The friendly ___ gives us milk.",
                 spokenPrompt: "The friendly... blank... gives us milk.",
                 correct: "left",
                 left: { text: "Cow", emoji: "🐄" },
-                right: { text: "Plane", emoji: "✈️" }
+                right: { text: "Plane", emoji: "✈️" },
+                translation: "הפרה הידידותית נותנת לנו חלב"
             },
             {
                 prompt: "We sleep in a cozy ___",
                 spokenPrompt: "We sleep in a cozy... blank!",
                 correct: "right",
                 right: { text: "Bed", emoji: "🛏️" },
-                left: { text: "Spoon", emoji: "🥄" }
+                left: { text: "Spoon", emoji: "🥄" },
+                translation: "אנחנו ישנים במיטה נוחה"
             },
             {
                 prompt: "The yellow ___ shines in the night sky.",
                 spokenPrompt: "The yellow... blank... shines in the night sky.",
                 correct: "right",
                 right: { text: "Moon", emoji: "🌙" },
-                left: { text: "Sun", emoji: "☀️" }
+                left: { text: "Sun", emoji: "☀️" },
+                translation: "הירח הצהוב מאיר בשמי הלילה"
             },
             {
                 prompt: "We clean our ___ with a toothbrush.",
                 spokenPrompt: "We clean our... blank... with a toothbrush.",
                 correct: "left",
                 left: { text: "Teeth", emoji: "🦷" },
-                right: { text: "Shoes", emoji: "👟" }
+                right: { text: "Shoes", emoji: "👟" },
+                translation: "אנחנו מנקים את השיניים שלנו עם מברשת שיניים"
             },
             {
                 prompt: "Busy ___ make sweet honey.",
                 spokenPrompt: "Busy... blank... make sweet honey.",
                 correct: "right",
                 right: { text: "Bees", emoji: "🐝" },
-                left: { text: "Dogs", emoji: "🐶" }
+                left: { text: "Dogs", emoji: "🐶" },
+                translation: "דבורים עסוקות מכינות דבש מתוק"
             },
             {
                 prompt: "A little yellow ___ says quack!",
                 spokenPrompt: "A little yellow... blank... says quack!",
                 correct: "left",
                 left: { text: "Duck", emoji: "🦆" },
-                right: { text: "Pig", emoji: "🐷" }
+                right: { text: "Pig", emoji: "🐷" },
+                translation: "ברווז צהוב קטן אומר קוואק!"
             },
             {
                 prompt: "We read an exciting ___ before bed.",
                 spokenPrompt: "We read an exciting... blank... before bed.",
                 correct: "right",
                 right: { text: "Book", emoji: "📖" },
-                left: { text: "Chair", emoji: "🪑" }
+                left: { text: "Chair", emoji: "🪑" },
+                translation: "אנחנו קוראים ספר מרגש לפני השינה"
             },
             {
                 prompt: "A pink ___ says oink!",
                 spokenPrompt: "A pink... blank... says oink!",
                 correct: "right",
                 right: { text: "Pig", emoji: "🐷" },
-                left: { text: "Lion", emoji: "🦁" }
+                left: { text: "Lion", emoji: "🦁" },
+                translation: "חזיר ורוד אומר אוינק!"
             },
             {
                 prompt: "A brave ___ makes a loud roar!",
                 spokenPrompt: "A brave... blank... makes a loud roar!",
                 correct: "right",
                 right: { text: "Lion", emoji: "🦁" },
-                left: { text: "Mouse", emoji: "🐭" }
+                left: { text: "Mouse", emoji: "🐭" },
+                translation: "אריה אמיץ שואג שאגה רועשת!"
             },
             {
                 prompt: "An ___ lives in the ocean.",
                 spokenPrompt: "An... blank... lives in the ocean.",
                 correct: "right",
                 right: { text: "Octopus", emoji: "🐙" },
-                left: { text: "Bird", emoji: "🕊️" }
+                left: { text: "Bird", emoji: "🕊️" },
+                translation: "תמנון חי באוקיינוס"
             },
             {
                 prompt: "A little ___ has eight legs.",
                 spokenPrompt: "A little... blank... has eight legs.",
                 correct: "left",
                 left: { text: "Spider", emoji: "🕷️" },
-                right: { text: "Fish", emoji: "🐟" }
+                right: { text: "Fish", emoji: "🐟" },
+                translation: "לעכביש קטן יש שמונה רגליים"
             },
             {
                 prompt: "We wear a warm ___ on our head.",
                 spokenPrompt: "We wear a warm... blank... on our head.",
                 correct: "right",
                 right: { text: "Hat", emoji: "🧢" },
-                left: { text: "Sock", emoji: "🧦" }
+                left: { text: "Sock", emoji: "🧦" },
+                translation: "אנחנו חובשים כובע חם על הראש"
             },
             {
                 prompt: "A red ___ grows on an apple tree.",
                 spokenPrompt: "A red... blank... grows on an apple tree.",
                 correct: "left",
                 left: { text: "Apple", emoji: "🍎" },
-                right: { text: "Car", emoji: "🚗" }
+                right: { text: "Car", emoji: "🚗" },
+                translation: "תפוח אדום גדל על עץ תפוחים"
             },
             {
                 prompt: "A ___ shows us what time it is.",
                 spokenPrompt: "A... blank... shows us what time it is.",
                 correct: "right",
                 right: { text: "Clock", emoji: "⏰" },
-                left: { text: "Radio", emoji: "📻" }
+                left: { text: "Radio", emoji: "📻" },
+                translation: "שעון מראה לנו מה השעה"
             },
             {
                 prompt: "A colorful ___ has pretty wings.",
                 spokenPrompt: "A colorful... blank... has pretty wings.",
                 correct: "left",
                 left: { text: "Butterfly", emoji: "🦋" },
-                right: { text: "Elephant", emoji: "🐘" }
+                right: { text: "Elephant", emoji: "🐘" },
+                translation: "לפרפר צבעוני יש כנפיים יפות"
             },
             {
                 prompt: "In cold winter, soft white ___ falls.",
                 spokenPrompt: "In cold winter, soft white... blank... falls.",
                 correct: "right",
                 right: { text: "Snow", emoji: "❄️" },
-                left: { text: "Fire", emoji: "🔥" }
+                left: { text: "Fire", emoji: "🔥" },
+                translation: "בחורף קר, שלג לבן ורך יורד"
             },
             {
                 prompt: "A tiny ___ loves to eat cheese.",
                 spokenPrompt: "A tiny... blank... loves to eat cheese.",
                 correct: "left",
                 left: { text: "Mouse", emoji: "🐭" },
-                right: { text: "Dinosaur", emoji: "🦕" }
+                right: { text: "Dinosaur", emoji: "🦕" },
+                translation: "עכבר פיצפון אוהב לאכול גבינה"
             },
             {
                 prompt: "We wash our hands with ___ and water.",
                 spokenPrompt: "We wash our hands with... blank... and water.",
                 correct: "right",
                 right: { text: "Soap", emoji: "🧼" },
-                left: { text: "Juice", emoji: "🧃" }
+                left: { text: "Juice", emoji: "🧃" },
+                translation: "אנחנו שוטפים ידיים עם סבון ומים"
             },
             {
                 prompt: "A pretty ___ flies high in the sky.",
                 spokenPrompt: "A pretty... blank... flies high in the sky.",
                 correct: "left",
                 left: { text: "Bird", emoji: "🕊️" },
-                right: { text: "Fish", emoji: "🐟" }
+                right: { text: "Fish", emoji: "🐟" },
+                translation: "ציפור יפה עפה גבוה בשמיים"
             }
         ];
 
@@ -699,6 +730,7 @@
 
                 // Elements
                 this.elPromptText = document.getElementById('prompt-text');
+                this.elPromptTranslation = document.getElementById('prompt-translation');
                 this.elCoinCount = document.getElementById('coin-count');
                 this.elLevelDisplay = document.getElementById('level-display');
                 this.elCharContainer = document.getElementById('character-container');
@@ -756,6 +788,13 @@
                 // Format prompt text with stylized underline blank
                 let formattedPrompt = item.prompt.replace('___', '<span class="inline-block border-b-4 border-indigo-500 text-indigo-600 px-3 min-w-[70px]">___</span>');
                 this.elPromptText.innerHTML = formattedPrompt;
+
+                // Reset translation display
+                if (this.elPromptTranslation) {
+                    this.elPromptTranslation.classList.add('opacity-0', 'max-h-0');
+                    this.elPromptTranslation.classList.remove('opacity-100', 'max-h-20');
+                    this.elPromptTranslation.textContent = '';
+                }
 
                 // Options update
                 document.getElementById('emoji-left').textContent = item.left.emoji;
@@ -876,6 +915,13 @@
                     const correctWord = item[side].text;
                     let revealedPrompt = item.prompt.replace('___', `<span class="inline-block border-b-4 border-emerald-500 text-emerald-600 px-3 font-extrabold min-w-[70px] scale-115 transition-transform">${correctWord}</span>`);
                     this.elPromptText.innerHTML = revealedPrompt;
+
+                    // Show correct translation
+                    if (this.elPromptTranslation && item.translation) {
+                        this.elPromptTranslation.textContent = item.translation;
+                        this.elPromptTranslation.classList.remove('opacity-0', 'max-h-0');
+                        this.elPromptTranslation.classList.add('opacity-100', 'max-h-20');
+                    }
 
                     // Speak the fully completed sentence
                     this.speakCurrentPrompt(correctWord);
