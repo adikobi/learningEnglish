@@ -41,6 +41,15 @@
             animation: scrollBackground 3s linear infinite;
         }
 
+        /* Float decorations */
+        @keyframes floatDecor {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+        .float-decor {
+            animation: floatDecor 4s ease-in-out infinite;
+        }
+
         /* Bounce Animations */
         @keyframes gentleBounce {
             0%, 100% { transform: translateY(0); }
@@ -88,7 +97,7 @@
         }
     </style>
 </head>
-<body class="h-screen w-screen relative flex flex-col justify-between items-center bg-gradient-to-b from-sky-300 via-sky-200 to-emerald-100 overflow-hidden">
+<body id="game-body" class="h-screen w-screen relative flex flex-col justify-between items-center bg-gradient-to-b from-sky-300 via-sky-200 to-emerald-100 overflow-hidden transition-all duration-1000">
 
     <!-- Top Header / Navigation & Score -->
     <header class="w-full max-w-4xl px-4 pt-3 pb-2 z-20 flex justify-between items-center gap-2" dir="rtl">
@@ -159,10 +168,15 @@
     <div class="relative w-full max-w-4xl h-64 md:h-80 my-auto flex items-center justify-between px-4 md:px-12 z-10" dir="ltr">
 
         <!-- Animated Grass / Road Track -->
-        <div class="absolute inset-0 mx-2 md:mx-8 rounded-3xl bg-emerald-400 border-4 border-emerald-500 shadow-inner overflow-hidden flex items-center justify-center">
+        <div id="road-track" class="absolute inset-0 mx-2 md:mx-8 rounded-3xl bg-emerald-400 border-4 border-emerald-500 shadow-inner overflow-hidden flex items-center justify-center transition-all duration-1000">
             <div id="path-bg" class="w-full h-full animated-path opacity-60"></div>
             <!-- Center Track Lines -->
             <div class="absolute w-2 h-full bg-white/30 border-r-2 border-dashed border-white/50"></div>
+        </div>
+
+        <!-- Float Background Decorations -->
+        <div id="bg-decorations" class="absolute inset-0 pointer-events-none z-0 overflow-hidden rounded-3xl mx-2 md:mx-8">
+            <!-- Dynamically populated decorations -->
         </div>
 
         <!-- Left Choice Option (Option B) -->
@@ -214,6 +228,12 @@
                         <polygon points="40,34 42,40 48,40 43,44 45,50 40,46 35,50 37,44 32,40 38,40" fill="#eab308"/>
                         <polygon points="60,34 62,40 68,40 63,44 65,50 60,46 55,50 57,44 52,40 58,40" fill="#eab308"/>
                     </g>
+                    <g id="svg-glasses-pirate" class="hidden">
+                        <!-- Eyepatch on right eye (center 58, 42) -->
+                        <circle cx="58" cy="42" r="7" fill="#1e293b"/>
+                        <!-- Strap going across head -->
+                        <line x1="30" y1="36" x2="70" y2="48" stroke="#1e293b" stroke-width="3"/>
+                    </g>
 
                     <!-- Hat Slot -->
                     <g id="svg-hat-party" class="hidden">
@@ -233,8 +253,20 @@
                         <path d="M 36,26 Q 36,12 50,12 Q 64,12 64,26 Z" fill="#a16207"/>
                         <rect x="36" y="23" width="28" height="3" fill="#ef4444"/>
                     </g>
+                    <g id="svg-hat-pirate" class="hidden">
+                        <!-- Pirate Tricorn Hat -->
+                        <path d="M 20,28 Q 50,10 80,28 Q 50,32 20,28 Z" fill="#1e293b"/>
+                        <path d="M 30,26 Q 50,5 70,26 Z" fill="#1e293b"/>
+                        <!-- White Skull / Crossbones -->
+                        <circle cx="50" cy="18" r="3" fill="#ffffff"/>
+                        <rect x="48" y="21" width="4" height="3" fill="#ffffff" rx="1"/>
+                    </g>
                 </svg>
             </div>
+            <!-- Floating Pet Companion -->
+            <div id="pet-companion" class="absolute -right-8 top-0 text-3xl animate-gentle-bounce hidden" style="animation-delay: 0.5s;">🐉</div>
+            <!-- Magic Wand / Side Accessory -->
+            <div id="wand-accessory" class="absolute -left-6 top-8 text-3xl animate-gentle-bounce hidden" style="animation-delay: 0.2s;">🪄</div>
             <!-- Shadow Name Tag -->
             <span id="avatar-name" class="bg-white/80 backdrop-blur-xs text-xs font-bold text-slate-700 px-2 py-0.5 rounded-full shadow-sm mt-1">
                 הרפתקן
@@ -288,7 +320,7 @@
 
                 <!-- Outfits Section -->
                 <div>
-                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">צבע בגד</h3>
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">צבע בגד וגלימה 👕</h3>
                     <div class="grid grid-cols-3 gap-3">
                         <button onclick="shop.buyOrEquip('outfit', 'blue', 0)" id="item-outfit-blue" class="shop-item border-2 border-slate-200 p-3 rounded-2xl flex flex-col items-center gap-1 hover:border-purple-400 transition-all">
                             <div class="w-10 h-10 rounded-full bg-blue-500 shadow-md"></div>
@@ -305,12 +337,17 @@
                             <span class="font-bold text-sm text-slate-700">בגד זהב</span>
                             <span class="price-tag text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">🪙 10</span>
                         </button>
+                        <button onclick="shop.buyOrEquip('outfit', 'cape', 20)" id="item-outfit-cape" class="shop-item border-2 border-slate-200 p-3 rounded-2xl flex flex-col items-center gap-1 hover:border-purple-400 transition-all">
+                            <div class="w-10 h-10 rounded-full bg-rose-500 shadow-md flex items-center justify-center text-white text-xs font-bold">🦸</div>
+                            <span class="font-bold text-sm text-slate-700">גלימת גיבור</span>
+                            <span class="price-tag text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">🪙 20</span>
+                        </button>
                     </div>
                 </div>
 
                 <!-- Hats Section -->
                 <div>
-                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">כובעים מגניבים</h3>
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">כובעים מגניבים 👑</h3>
                     <div class="grid grid-cols-3 gap-3">
                         <button onclick="shop.buyOrEquip('hat', 'none', 0)" id="item-hat-none" class="shop-item border-2 border-slate-200 p-3 rounded-2xl flex flex-col items-center gap-1 hover:border-purple-400 transition-all">
                             <span class="text-3xl">🚫</span>
@@ -332,12 +369,17 @@
                             <span class="font-bold text-sm text-slate-700">כובע קאובוי</span>
                             <span class="price-tag text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">🪙 12</span>
                         </button>
+                        <button onclick="shop.buyOrEquip('hat', 'pirate', 18)" id="item-hat-pirate" class="shop-item border-2 border-slate-200 p-3 rounded-2xl flex flex-col items-center gap-1 hover:border-purple-400 transition-all">
+                            <span class="text-3xl">🏴‍☠️</span>
+                            <span class="font-bold text-sm text-slate-700">כובע פיראט</span>
+                            <span class="price-tag text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">🪙 18</span>
+                        </button>
                     </div>
                 </div>
 
                 <!-- Glasses Section -->
                 <div>
-                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">משקפיים ואביזרים</h3>
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">משקפיים ואביזרים 🕶️</h3>
                     <div class="grid grid-cols-3 gap-3">
                         <button onclick="shop.buyOrEquip('glasses', 'none', 0)" id="item-glasses-none" class="shop-item border-2 border-slate-200 p-3 rounded-2xl flex flex-col items-center gap-1 hover:border-purple-400 transition-all">
                             <span class="text-3xl">🚫</span>
@@ -353,6 +395,43 @@
                             <span class="text-3xl">⭐</span>
                             <span class="font-bold text-sm text-slate-700">משקפי כוכב</span>
                             <span class="price-tag text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">🪙 12</span>
+                        </button>
+                        <button onclick="shop.buyOrEquip('glasses', 'pirate', 15)" id="item-glasses-pirate" class="shop-item border-2 border-slate-200 p-3 rounded-2xl flex flex-col items-center gap-1 hover:border-purple-400 transition-all">
+                            <span class="text-3xl">👁️‍🗨️</span>
+                            <span class="font-bold text-sm text-slate-700">רטיית פיראט</span>
+                            <span class="price-tag text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">🪙 15</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pets and Wands Section -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">חיות מחמד וקסמים ✨🐾</h3>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="shop.buyOrEquip('pet', 'none', 0)" id="item-pet-none" class="shop-item border-2 border-slate-200 p-3 rounded-2xl flex flex-col items-center gap-1 hover:border-purple-400 transition-all">
+                            <span class="text-3xl">🚫</span>
+                            <span class="font-bold text-sm text-slate-700">ללא חיה</span>
+                            <span class="text-xs font-semibold text-emerald-600">בבעלותך</span>
+                        </button>
+                        <button onclick="shop.buyOrEquip('pet', 'dragon', 30)" id="item-pet-dragon" class="shop-item border-2 border-slate-200 p-3 rounded-2xl flex flex-col items-center gap-1 hover:border-purple-400 transition-all">
+                            <span class="text-3xl">🐉</span>
+                            <span class="font-bold text-sm text-slate-700">דרקון קטן</span>
+                            <span class="price-tag text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">🪙 30</span>
+                        </button>
+                        <button onclick="shop.buyOrEquip('pet', 'puppy', 25)" id="item-pet-puppy" class="shop-item border-2 border-slate-200 p-3 rounded-2xl flex flex-col items-center gap-1 hover:border-purple-400 transition-all">
+                            <span class="text-3xl">🐶</span>
+                            <span class="font-bold text-sm text-slate-700">כלבלב מתוק</span>
+                            <span class="price-tag text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">🪙 25</span>
+                        </button>
+                        <button onclick="shop.buyOrEquip('wand', 'none', 0)" id="item-wand-none" class="shop-item border-2 border-slate-200 p-3 rounded-2xl flex flex-col items-center gap-1 hover:border-purple-400 transition-all">
+                            <span class="text-3xl">🚫</span>
+                            <span class="font-bold text-sm text-slate-700">ללא שרביט</span>
+                            <span class="text-xs font-semibold text-emerald-600">בבעלותך</span>
+                        </button>
+                        <button onclick="shop.buyOrEquip('wand', 'magic', 20)" id="item-wand-magic" class="shop-item border-2 border-slate-200 p-3 rounded-2xl flex flex-col items-center gap-1 hover:border-purple-400 transition-all">
+                            <span class="text-3xl">🪄</span>
+                            <span class="font-bold text-sm text-slate-700">שרביט קסם</span>
+                            <span class="price-tag text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">🪙 20</span>
                         </button>
                     </div>
                 </div>
@@ -474,6 +553,58 @@
         }
 
         const soundFX = new SoundFX();
+
+        // Helper function to dynamically generate a randomized math fraction comparison challenge
+        function generateMathFractionChallenge() {
+            // Generate two distinct fractions with small denominators for kids
+            const denoms = [2, 3, 4, 5, 6, 8, 10];
+            let d1 = denoms[Math.floor(Math.random() * denoms.length)];
+            let d2 = denoms[Math.floor(Math.random() * denoms.length)];
+
+            let n1 = Math.floor(Math.random() * (d1 - 1)) + 1;
+            let n2 = Math.floor(Math.random() * (d2 - 1)) + 1;
+
+            let v1 = n1 / d1;
+            let v2 = n2 / d2;
+
+            // If they are equal, tweak one to make them distinct
+            if (Math.abs(v1 - v2) < 0.001) {
+                if (n1 < d1 - 1) {
+                    n1++;
+                    v1 = n1 / d1;
+                } else {
+                    n2 = Math.max(1, n2 - 1);
+                    v2 = n2 / d2;
+                }
+            }
+
+            // Map fraction names to Hebrew words for kids
+            const fractionNames = {
+                "1/2": "חצי", "1/3": "שליש", "2/3": "שני שליש",
+                "1/4": "רבע", "3/4": "שלוש רבעי", "1/5": "חמישית",
+                "2/5": "שני חמישיות", "3/5": "שלוש חמישיות", "4/5": "ארבע חמישיות",
+                "1/6": "שישית", "5/6": "חמש שישיות", "1/8": "שמינית",
+                "3/8": "שלוש שמיניות", "5/8": "חמש שמיניות", "7/8": "שבע שמיניות",
+                "1/10": "עשירית", "3/10": "שלוש עשיריות", "7/10": "שבע עשיריות", "9/10": "תשע עשיריות"
+            };
+
+            const f1_str = `${n1}/${d1}`;
+            const f2_str = `${n2}/${d2}`;
+            const name1 = fractionNames[f1_str] || `${n1} חלקי ${d1}`;
+            const name2 = fractionNames[f2_str] || `${n2} חלקי ${d2}`;
+
+            const correctSide = v1 > v2 ? "left" : "right";
+
+            return {
+                isMath: true,
+                prompt: "Which fraction is bigger? / מה יותר גדול?",
+                spokenPrompt: "Which fraction is bigger?",
+                correct: correctSide,
+                left: { text: f1_str, emoji: `🍕 (${name1})` },
+                right: { text: f2_str, emoji: `🍕 (${name2})` },
+                translation: `התשובה הנכונה: ${v1 > v2 ? f1_str : f2_str} גדול יותר מ- ${v1 > v2 ? f2_str : f1_str}!`
+            };
+        }
 
         /* Expanded Challenge Database where missing words directly match their emoji graphics */
         const CHALLENGES = [
@@ -744,9 +875,79 @@
                 this.bindKeyboard();
             }
 
+            // Apply dynamic visual backgrounds / decoration assets based on current Level
+            applyThemeWorld(level) {
+                const body = document.getElementById('game-body');
+                const track = document.getElementById('road-track');
+                const bgDecor = document.getElementById('bg-decorations');
+                const pathBg = document.getElementById('path-bg');
+
+                if (!body || !track || !bgDecor || !pathBg) return;
+
+                // Clear previous decorations
+                bgDecor.innerHTML = '';
+
+                let world = '';
+                if (level <= 3) {
+                    world = 'nature';
+                    // Nature World (Green, Blue skies)
+                    body.className = "h-screen w-screen relative flex flex-col justify-between items-center bg-gradient-to-b from-sky-300 via-sky-200 to-emerald-100 overflow-hidden transition-all duration-1000";
+                    track.className = "absolute inset-0 mx-2 md:mx-8 rounded-3xl bg-emerald-400 border-4 border-emerald-500 shadow-inner overflow-hidden flex items-center justify-center transition-all duration-1000";
+                    pathBg.style.backgroundImage = "radial-gradient(#a3e635 15%, transparent 16%), radial-gradient(#86efac 15%, transparent 16%)";
+
+                    // Simple floating clouds/flowers
+                    bgDecor.innerHTML = `
+                        <span class="absolute text-5xl float-decor" style="top: 15%; left: 10%; animation-delay: 0s;">☁️</span>
+                        <span class="absolute text-5xl float-decor" style="top: 25%; right: 12%; animation-delay: 1.5s;">☁️</span>
+                        <span class="absolute text-3xl float-decor" style="bottom: 10%; left: 20%; animation-delay: 0.8s;">🌸</span>
+                        <span class="absolute text-3xl float-decor" style="bottom: 15%; right: 25%; animation-delay: 2.2s;">🌻</span>
+                    `;
+                } else if (level <= 6) {
+                    world = 'space';
+                    // Cosmic Space (Dark purple / black, stars)
+                    body.className = "h-screen w-screen relative flex flex-col justify-between items-center bg-gradient-to-b from-slate-950 via-purple-950 to-indigo-900 overflow-hidden transition-all duration-1000";
+                    track.className = "absolute inset-0 mx-2 md:mx-8 rounded-3xl bg-indigo-950 border-4 border-indigo-700 shadow-inner overflow-hidden flex items-center justify-center transition-all duration-1000";
+                    pathBg.style.backgroundImage = "radial-gradient(#6366f1 15%, transparent 16%), radial-gradient(#4f46e5 15%, transparent 16%)";
+
+                    bgDecor.innerHTML = `
+                        <span class="absolute text-5xl float-decor" style="top: 10%; left: 8%; animation-delay: 0.3s;">🪐</span>
+                        <span class="absolute text-4xl float-decor" style="top: 30%; right: 15%; animation-delay: 1.8s;">🚀</span>
+                        <span class="absolute text-3xl float-decor" style="bottom: 12%; left: 25%; animation-delay: 0.5s;">⭐</span>
+                        <span class="absolute text-3xl float-decor" style="bottom: 22%; right: 30%; animation-delay: 2.5s;">🛰️</span>
+                    `;
+                } else if (level <= 9) {
+                    world = 'ocean';
+                    // Deep Ocean (Deep Blues, bubbles)
+                    body.className = "h-screen w-screen relative flex flex-col justify-between items-center bg-gradient-to-b from-blue-900 via-sky-800 to-cyan-500 overflow-hidden transition-all duration-1000";
+                    track.className = "absolute inset-0 mx-2 md:mx-8 rounded-3xl bg-cyan-700 border-4 border-cyan-500 shadow-inner overflow-hidden flex items-center justify-center transition-all duration-1000";
+                    pathBg.style.backgroundImage = "radial-gradient(#0891b2 15%, transparent 16%), radial-gradient(#06b6d4 15%, transparent 16%)";
+
+                    bgDecor.innerHTML = `
+                        <span class="absolute text-5xl float-decor" style="top: 18%; left: 14%; animation-delay: 0.1s;">🐳</span>
+                        <span class="absolute text-4xl float-decor" style="top: 22%; right: 10%; animation-delay: 1.2s;">🐠</span>
+                        <span class="absolute text-3xl float-decor" style="bottom: 8%; left: 18%; animation-delay: 2s;">🐙</span>
+                        <span class="absolute text-3xl float-decor" style="bottom: 18%; right: 22%; animation-delay: 0.6s;">🫧</span>
+                    `;
+                } else {
+                    world = 'jungle';
+                    // Dino Jungle (Deep Forest Greens, Dinosaurs / Palms)
+                    body.className = "h-screen w-screen relative flex flex-col justify-between items-center bg-gradient-to-b from-emerald-950 via-teal-900 to-amber-100 overflow-hidden transition-all duration-1000";
+                    track.className = "absolute inset-0 mx-2 md:mx-8 rounded-3xl bg-amber-800 border-4 border-amber-950 shadow-inner overflow-hidden flex items-center justify-center transition-all duration-1000";
+                    pathBg.style.backgroundImage = "radial-gradient(#15803d 15%, transparent 16%), radial-gradient(#166534 15%, transparent 16%)";
+
+                    bgDecor.innerHTML = `
+                        <span class="absolute text-5xl float-decor" style="top: 8%; left: 15%; animation-delay: 0.4s;">🦕</span>
+                        <span class="absolute text-5xl float-decor" style="top: 25%; right: 8%; animation-delay: 1.9s;">🦖</span>
+                        <span class="absolute text-4xl float-decor" style="bottom: 12%; left: 12%; animation-delay: 0.7s;">🌴</span>
+                        <span class="absolute text-4xl float-decor" style="bottom: 20%; right: 28%; animation-delay: 2.1s;">🌴</span>
+                    `;
+                }
+            }
+
             init() {
                 this.shuffleDeck();
                 this.loadChallenge();
+                this.applyThemeWorld(1);
                 shop.updateUI();
             }
 
@@ -771,6 +972,29 @@
             }
 
             currentChallenge() {
+                // If the dynamic challenge is active, return it
+                if (this.activeMathChallenge) {
+                    return this.activeMathChallenge;
+                }
+                if (this.activeSpellingChallenge) {
+                    return this.activeSpellingChallenge;
+                }
+
+                // Core loop: Let's weave in standard challenges, spelling bonus, and math fraction generator.
+                // Every 3rd challenge is a Math Fraction Comparison.
+                // Every 4th challenge is a Spelling Scrambled Letters Bonus.
+                const challengePos = this.currentIndex + 1;
+                if (challengePos % 4 === 0) {
+                    // Spelling challenge setup will be triggered by loadChallenge
+                    return { isSpellingPlaceholder: true };
+                } else if (challengePos % 3 === 0) {
+                    if (!this.lastMathPos || this.lastMathPos !== challengePos) {
+                        this.activeMathChallenge = generateMathFractionChallenge();
+                        this.lastMathPos = challengePos;
+                    }
+                    return this.activeMathChallenge;
+                }
+
                 if (this.deck.length === 0) {
                     this.shuffleDeck();
                 }
@@ -783,7 +1007,14 @@
             }
 
             loadChallenge() {
-                const item = this.currentChallenge();
+                // If it is a spelling placeholder, we generate a spelling challenge from current deck item
+                let item = this.currentChallenge();
+                if (item && item.isSpellingPlaceholder) {
+                    if (this.deck.length === 0) this.shuffleDeck();
+                    const rawItem = CHALLENGES[this.deck[this.currentIndex % this.deck.length]];
+                    this.setupSpellingChallenge(rawItem);
+                    item = this.activeSpellingChallenge;
+                }
 
                 // Format prompt text with stylized underline blank
                 let formattedPrompt = item.prompt.replace('___', '<span class="inline-block border-b-4 border-indigo-500 text-indigo-600 px-3 min-w-[70px]">___</span>');
@@ -796,12 +1027,28 @@
                     this.elPromptTranslation.textContent = '';
                 }
 
-                // Options update
-                document.getElementById('emoji-left').textContent = item.left.emoji;
-                document.getElementById('text-left').textContent = item.left.text;
+                // If spelling challenge, hide standard choice buttons and show spelling panel
+                const spellingPanel = document.getElementById('spelling-panel');
+                const optionLeftBtn = document.getElementById('option-left');
+                const optionRightBtn = document.getElementById('option-right');
 
-                document.getElementById('emoji-right').textContent = item.right.emoji;
-                document.getElementById('text-right').textContent = item.right.text;
+                if (item.isSpelling) {
+                    optionLeftBtn.style.display = 'none';
+                    optionRightBtn.style.display = 'none';
+                    if (spellingPanel) spellingPanel.remove();
+                    this.renderSpellingUI(item);
+                } else {
+                    optionLeftBtn.style.display = 'flex';
+                    optionRightBtn.style.display = 'flex';
+                    if (spellingPanel) spellingPanel.classList.add('hidden');
+
+                    // Standard Options update
+                    document.getElementById('emoji-left').textContent = item.left.emoji;
+                    document.getElementById('text-left').textContent = item.left.text;
+
+                    document.getElementById('emoji-right').textContent = item.right.emoji;
+                    document.getElementById('text-right').textContent = item.right.text;
+                }
 
                 // Reset Character position to center
                 this.elCharContainer.style.transform = `translateX(0px)`;
@@ -813,11 +1060,202 @@
                 }, 300);
             }
 
+            setupSpellingChallenge(rawChallenge) {
+                // Determine the correct word to spell
+                const side = rawChallenge.correct;
+                const wordToSpell = rawChallenge[side].text; // e.g. "Apple" or "Sun"
+
+                // Scramble letters
+                const letters = wordToSpell.toUpperCase().split('');
+                const scrambled = [...letters].sort(() => Math.random() - 0.5);
+
+                this.activeSpellingChallenge = {
+                    isSpelling: true,
+                    prompt: rawChallenge.prompt,
+                    correctWord: wordToSpell,
+                    targetLetters: letters, // uppercase
+                    scrambledLetters: scrambled,
+                    currentIndex: 0, // tracking correctly clicked letter index
+                    spelledSoFar: "",
+                    translation: `תרגום: ${rawChallenge.translation}`
+                };
+            }
+
+            renderSpellingUI(item) {
+                // Create or reveal the spelling panel container in the Stage Area
+                let panel = document.getElementById('spelling-panel');
+                if (!panel) {
+                    panel = document.createElement('div');
+                    panel.id = 'spelling-panel';
+                    panel.className = "absolute inset-x-0 bottom-4 mx-auto max-w-xl z-30 flex flex-col items-center gap-4 bg-white/95 backdrop-blur-md p-5 rounded-3xl shadow-xl border-4 border-indigo-400";
+                    // Insert before touch footer controls
+                    const footer = document.querySelector('footer');
+                    if (footer) {
+                        footer.parentNode.insertBefore(panel, footer);
+                    } else {
+                        document.body.appendChild(panel);
+                    }
+                } else {
+                    panel.classList.remove('hidden');
+                    panel.innerHTML = '';
+                }
+
+                // Header / Instruction
+                const title = document.createElement('h3');
+                title.className = "text-lg font-bold text-slate-800";
+                title.textContent = "כתוב את המילה החסרה באנגלית! ✍️";
+                panel.appendChild(title);
+
+                // Word progress container (shows typed letters)
+                const progressBox = document.createElement('div');
+                progressBox.className = "flex gap-2 text-3xl font-extrabold text-indigo-600 border-b-2 border-slate-300 pb-2 min-h-[44px] tracking-widest uppercase";
+                progressBox.id = "spelling-progress";
+                progressBox.textContent = item.spelledSoFar || " ";
+                panel.appendChild(progressBox);
+
+                // Scrambled letters bubbles container
+                const bubblesContainer = document.createElement('div');
+                bubblesContainer.className = "flex flex-wrap justify-center gap-3 mt-2";
+                bubblesContainer.id = "spelling-bubbles";
+
+                item.scrambledLetters.forEach((letter, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-12 h-12 md:w-14 md:h-14 bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-white font-extrabold text-xl md:text-2xl rounded-full shadow-md border-b-4 border-indigo-700 transition-all flex items-center justify-center cursor-pointer";
+                    btn.textContent = letter;
+                    btn.onclick = () => this.handleSpellingLetterClick(letter, btn, idx);
+                    bubblesContainer.appendChild(btn);
+                });
+
+                panel.appendChild(bubblesContainer);
+            }
+
+            handleSpellingLetterClick(letter, btn, idx) {
+                if (this.isAnimating) return;
+                const item = this.activeSpellingChallenge;
+                if (!item) return;
+
+                const expectedLetter = item.targetLetters[item.currentIndex];
+
+                if (letter === expectedLetter) {
+                    // Correct letter!
+                    soundFX.playCoin();
+                    item.spelledSoFar += letter;
+                    item.currentIndex++;
+
+                    // Update typed display
+                    const progressBox = document.getElementById('spelling-progress');
+                    if (progressBox) progressBox.textContent = item.spelledSoFar;
+
+                    // Disable and style the clicked bubble
+                    btn.disabled = true;
+                    btn.className = "w-12 h-12 md:w-14 md:h-14 bg-emerald-500 text-white font-extrabold text-xl md:text-2xl rounded-full shadow-md border-b-4 border-emerald-700 flex items-center justify-center opacity-60 cursor-not-allowed";
+
+                    // Speak the letter
+                    if (this.synth) {
+                        this.synth.cancel();
+                        const u = new SpeechSynthesisUtterance(letter.toLowerCase());
+                        u.rate = 1.0;
+                        u.lang = 'en-US';
+                        this.synth.speak(u);
+                    }
+
+                    // Check if fully spelled
+                    if (item.currentIndex === item.targetLetters.length) {
+                        this.isAnimating = true;
+
+                        // Speak the complete spelled word
+                        setTimeout(() => {
+                            soundFX.playSuccess();
+                            this.coins += 2;
+                            this.elCoinCount.textContent = this.coins;
+                            shop.updateUI();
+
+                            // Show word inside prompt text
+                            const formatted = item.prompt.replace('___', `<span class="inline-block border-b-4 border-emerald-500 text-emerald-600 px-3 font-extrabold min-w-[70px] scale-115 transition-transform">${item.correctWord}</span>`);
+                            this.elPromptText.innerHTML = formatted;
+
+                            // Show translation
+                            if (this.elPromptTranslation) {
+                                this.elPromptTranslation.textContent = item.translation;
+                                this.elPromptTranslation.classList.remove('opacity-0', 'max-h-0');
+                                this.elPromptTranslation.classList.add('opacity-100', 'max-h-20');
+                            }
+
+                            // Confetti
+                            confetti({
+                                particleCount: 50,
+                                spread: 60,
+                                origin: { y: 0.7 }
+                            });
+
+                            this.showToast("מצוין! סיימת לאיית! 🎉 +2 מטבעות", true);
+
+                            // Speak complete sentence
+                            if (this.synth) {
+                                const sentenceSpoken = item.prompt.replace('___', item.correctWord);
+                                const u = new SpeechSynthesisUtterance(sentenceSpoken);
+                                u.rate = 0.85;
+                                u.lang = 'en-US';
+                                this.synth.speak(u);
+                            }
+
+                            this.elPathBg.classList.add('moving-path');
+
+                            setTimeout(() => {
+                                this.elPathBg.classList.remove('moving-path');
+                                this.activeSpellingChallenge = null;
+                                const spellingPanel = document.getElementById('spelling-panel');
+                                if (spellingPanel) spellingPanel.classList.add('hidden');
+
+                                this.currentIndex++;
+                                const nextLevel = Math.floor(this.currentIndex / 3) + 1;
+                                this.elLevelDisplay.textContent = nextLevel;
+                                this.applyThemeWorld(nextLevel);
+
+                                if (this.coins >= 10 && !this.hasTriggeredShop10) {
+                                    this.hasTriggeredShop10 = true;
+                                    shop.openModal(true);
+                                } else {
+                                    this.loadChallenge();
+                                    this.isAnimating = false;
+                                }
+                            }, 3000);
+
+                        }, 500);
+                    }
+
+                } else {
+                    // Wrong letter - Reset spelling state
+                    soundFX.playTryAgain();
+                    this.showToast("אופס! נסה שוב את האיות 💪", false);
+
+                    // Quick Shake effect
+                    const progressBox = document.getElementById('spelling-progress');
+                    if (progressBox) {
+                        progressBox.classList.add('text-rose-500');
+                        setTimeout(() => progressBox.classList.remove('text-rose-500'), 500);
+                    }
+
+                    // Reset
+                    item.currentIndex = 0;
+                    item.spelledSoFar = "";
+
+                    // Rerender bubbles to re-enable
+                    setTimeout(() => {
+                        this.renderSpellingUI(item);
+                    }, 500);
+                }
+            }
+
             speakCurrentPrompt(revealedWord = null) {
                 if (!this.synth) return;
                 this.synth.cancel(); // Stop prior speech
 
                 const item = this.currentChallenge();
+
+                // If standard spelling is placeholder, handle it gracefully
+                if (!item || item.isSpellingPlaceholder) return;
+
                 let spokenText = "";
 
                 if (revealedWord) {
@@ -828,6 +1266,14 @@
                     utterance.lang = 'en-US';
                     this.synth.speak(utterance);
                 } else {
+                    if (item.isMath) {
+                        const u = new SpeechSynthesisUtterance(item.spokenPrompt);
+                        u.rate = 0.85;
+                        u.lang = 'en-US';
+                        this.synth.speak(u);
+                        return;
+                    }
+
                     // Play text-to-speech, masking blank with a beep sound!
                     const parts = item.prompt.split('___');
 
@@ -908,13 +1354,21 @@
 
                     // Pulse effect on chosen side
                     const targetEl = side === 'left' ? this.elOptionLeft : this.elOptionRight;
-                    targetEl.classList.add('animate-success-pulse');
-                    setTimeout(() => targetEl.classList.remove('animate-success-pulse'), 500);
+                    if (targetEl) {
+                        targetEl.classList.add('animate-success-pulse');
+                        setTimeout(() => targetEl.classList.remove('animate-success-pulse'), 500);
+                    }
 
                     // Show correct answer word inside prompt
-                    const correctWord = item[side].text;
-                    let revealedPrompt = item.prompt.replace('___', `<span class="inline-block border-b-4 border-emerald-500 text-emerald-600 px-3 font-extrabold min-w-[70px] scale-115 transition-transform">${correctWord}</span>`);
-                    this.elPromptText.innerHTML = revealedPrompt;
+                    let correctWord = '';
+                    if (item.isMath) {
+                        correctWord = item[side].text;
+                        this.elPromptText.innerHTML = `<span class="text-emerald-600 font-extrabold scale-110 transition-transform">${item[side].text} !</span>`;
+                    } else {
+                        correctWord = item[side].text;
+                        let revealedPrompt = item.prompt.replace('___', `<span class="inline-block border-b-4 border-emerald-500 text-emerald-600 px-3 font-extrabold min-w-[70px] scale-115 transition-transform">${correctWord}</span>`);
+                        this.elPromptText.innerHTML = revealedPrompt;
+                    }
 
                     // Show correct translation
                     if (this.elPromptTranslation && item.translation) {
@@ -924,7 +1378,11 @@
                     }
 
                     // Speak the fully completed sentence
-                    this.speakCurrentPrompt(correctWord);
+                    if (item.isMath) {
+                        this.speakCurrentPrompt(item[side].text);
+                    } else {
+                        this.speakCurrentPrompt(correctWord);
+                    }
 
                     // Confetti Burst
                     confetti({
@@ -940,8 +1398,16 @@
 
                     setTimeout(() => {
                         this.elPathBg.classList.remove('moving-path');
+
+                        // Clear math challenge once solved
+                        if (this.activeMathChallenge) {
+                            this.activeMathChallenge = null;
+                        }
+
                         this.currentIndex++;
-                        this.elLevelDisplay.textContent = Math.floor(this.currentIndex / 3) + 1;
+                        const nextLevel = Math.floor(this.currentIndex / 3) + 1;
+                        this.elLevelDisplay.textContent = nextLevel;
+                        this.applyThemeWorld(nextLevel);
 
                         // Check Shop Trigger at 10 coins
                         if (this.coins >= 10 && !this.hasTriggeredShop10) {
@@ -958,10 +1424,18 @@
                     soundFX.playTryAgain();
                     this.showToast("נסה שוב! אתה יכול לעשות את זה! 💪", false);
 
+                    // If they fail a math comparison, instantly replace it with a fresh random math fraction challenge!
+                    if (item.isMath) {
+                        this.activeMathChallenge = generateMathFractionChallenge();
+                    }
+
                     // Reset back to center slowly
                     setTimeout(() => {
                         this.elCharContainer.style.transform = `translateX(0px)`;
                         this.isAnimating = false;
+                        if (item.isMath) {
+                            this.loadChallenge();
+                        }
                     }, 800);
                 }
             }
@@ -977,13 +1451,17 @@
                 this.equipped = {
                     outfit: 'blue',
                     hat: 'none',
-                    glasses: 'none'
+                    glasses: 'none',
+                    pet: 'none',
+                    wand: 'none'
                 };
 
                 this.owned = {
                     outfit: ['blue'],
                     hat: ['none'],
-                    glasses: ['none']
+                    glasses: ['none'],
+                    pet: ['none'],
+                    wand: ['none']
                 };
 
                 this.modalEl = document.getElementById('shop-modal');
@@ -1039,18 +1517,56 @@
             applyCosmetics() {
                 // Apply Outfit color to SVG
                 const svgBody = document.getElementById('svg-body');
-                if (this.equipped.outfit === 'blue') svgBody.setAttribute('fill', '#3b82f6');
-                else if (this.equipped.outfit === 'red') svgBody.setAttribute('fill', '#ef4444');
-                else if (this.equipped.outfit === 'gold') svgBody.setAttribute('fill', '#f59e0b');
+                const svgCape = document.getElementById('svg-cape');
+
+                if (this.equipped.outfit === 'blue') {
+                    svgBody.setAttribute('fill', '#3b82f6');
+                    svgCape.classList.add('hidden');
+                } else if (this.equipped.outfit === 'red') {
+                    svgBody.setAttribute('fill', '#ef4444');
+                    svgCape.classList.add('hidden');
+                } else if (this.equipped.outfit === 'gold') {
+                    svgBody.setAttribute('fill', '#f59e0b');
+                    svgCape.classList.add('hidden');
+                } else if (this.equipped.outfit === 'cape') {
+                    svgBody.setAttribute('fill', '#3b82f6');
+                    svgCape.classList.remove('hidden');
+                    svgCape.setAttribute('fill', '#f43f5e'); // bright red superhero cape!
+                }
 
                 // Apply Hats
                 document.getElementById('svg-hat-party').classList.toggle('hidden', this.equipped.hat !== 'party');
                 document.getElementById('svg-hat-crown').classList.toggle('hidden', this.equipped.hat !== 'crown');
                 document.getElementById('svg-hat-cowboy').classList.toggle('hidden', this.equipped.hat !== 'cowboy');
+                document.getElementById('svg-hat-pirate').classList.toggle('hidden', this.equipped.hat !== 'pirate');
 
                 // Apply Glasses
                 document.getElementById('svg-glasses-cool').classList.toggle('hidden', this.equipped.glasses !== 'cool');
                 document.getElementById('svg-glasses-star').classList.toggle('hidden', this.equipped.glasses !== 'star');
+                document.getElementById('svg-glasses-pirate').classList.toggle('hidden', this.equipped.glasses !== 'pirate');
+
+                // Apply Pets
+                const petEl = document.getElementById('pet-companion');
+                if (petEl) {
+                    if (this.equipped.pet === 'none') {
+                        petEl.classList.add('hidden');
+                    } else {
+                        petEl.classList.remove('hidden');
+                        if (this.equipped.pet === 'dragon') petEl.textContent = '🐉';
+                        else if (this.equipped.pet === 'puppy') petEl.textContent = '🐶';
+                    }
+                }
+
+                // Apply Wands
+                const wandEl = document.getElementById('wand-accessory');
+                if (wandEl) {
+                    if (this.equipped.wand === 'none') {
+                        wandEl.classList.add('hidden');
+                    } else {
+                        wandEl.classList.remove('hidden');
+                        if (this.equipped.wand === 'magic') wandEl.textContent = '🪄';
+                    }
+                }
             }
 
             updateUI() {
@@ -1064,7 +1580,7 @@
                 }
 
                 // Update item buttons state
-                const categories = ['outfit', 'hat', 'glasses'];
+                const categories = ['outfit', 'hat', 'glasses', 'pet', 'wand'];
                 categories.forEach(cat => {
                     const buttons = document.querySelectorAll(`[id^="item-${cat}-"]`);
                     buttons.forEach(btn => {
